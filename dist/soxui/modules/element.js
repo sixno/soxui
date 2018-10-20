@@ -1,0 +1,1 @@
+(function(){"use strict";function e(){this.version="1.0.0";return this}if(typeof soxui!="undefined"){soxui.element=new e}else{window.soxelement=new e}})();

@@ -6,10 +6,11 @@
 
  */
 
-(function() {
+(function(){
     "use strict";
 
-    function tpl(){
+    function tpl()
+    {
         var config = {
             tag_open: '{{',
             tag_shut: '}}'
@@ -37,7 +38,8 @@
             }
         };
 
-        this.create = function(tpl){
+        this.create = function(tpl)
+        {
             var js_s = tool.exp('^'+config.tag_open+'#', '');
             var js_e = tool.exp(config.tag_shut+'$', '');
 
@@ -76,7 +78,8 @@
             }
         };
 
-        this.render = function(tpl, data, callback){
+        this.render = function(tpl, data, callback)
+        {
             if(!data) data = {};
 
             tpl = tpl(data, tool.escape);
@@ -86,7 +89,8 @@
             callback(tpl);
         };
 
-        this.config = function(options){
+        this.config = function(options)
+        {
             options = options || {};
 
             for(var i in options)

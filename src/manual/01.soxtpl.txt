@@ -1,0 +1,17 @@
+﻿模块名：tpl
+
+加载时将检测soxui对象是否存在，若存在则以soxui.tpl的形式注入soxui对象，否则以soxtpl的形式注入window对象，以下假定soxui对象存在。
+
+1. soxui.tpl.config({key1: val1,key2: val2,...})
+(1) tag_open '{{'
+(2) tag_shut '}}'
+以上两项用于设置模板变量的边界条件
+
+2. soxui.tpl.create(html_template_string)
+{{var}}          输出变量，render方法传入的数据都见注入变量“d”中，即实际使用中，通常以{{d.data_name}}的形式输出变量值
+{{(expression)}} 输出表达式结果
+{{# js_string }} 执行js语句
+
+3. soxui.tpl.render(template_from_step_2,data)
+template_from_step_2是由create方法创建的模板，需要注意。
+data是需要传入模板的模板变量。
