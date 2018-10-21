@@ -55,12 +55,15 @@
 
             var file_loaded = function(fid,node,event)
             {
-                file[fid].load = true;
-                head.removeChild(node);
-
-                for(var i in file)
+                if(typeof(fid) != 'undefined')
                 {
-                    if(!file[i].load) return false;
+                    file[fid].load = true;
+                    head.removeChild(node);
+
+                    for(var i in file)
+                    {
+                        if(!file[i].load) return false;
+                    }
                 }
 
                 if(typeof(callback) == 'function')
@@ -82,7 +85,14 @@
                 }
             }
 
-            // load jQuery
+            if(typeof(window.jQuery) != 'undefined')
+            {
+                this.$ = window.jQuery;
+            }
+            else
+            {
+                file.jquery = {path: uibase+'modules/jquery.js',load: false};
+            }
 
             for(var i in modules)
             {
@@ -113,6 +123,11 @@
             for(var i in file)
             {
                 load_module(i,file[i].path,this.version);
+            }
+
+            if(typeof(window.jQuery) != 'undefined' && modules.length == 0)
+            {
+                file_loaded();
             }
         }
 

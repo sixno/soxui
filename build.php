@@ -69,7 +69,8 @@ foreach($files as $file)
 
 	switch(pathinfo($file,PATHINFO_EXTENSION))
 	{
-		case 'less': continue; break;
+		case 'less':
+		case 'config': continue; break;
 
 		case 'js':
 			ex('compress file [src/'.$file.'] to [dist/'.$file.']');
