@@ -1,0 +1,43 @@
+@import '../soxui.less.config';
+
+/** 分页 **/
+.soxui-pagination{display: inline-block; *display: inline; *zoom: 1; vertical-align: middle; margin: 10px 0; font-size: 0;}
+.soxui-pagination>a:first-child,
+.soxui-pagination>a:first-child em{border-radius: 2px 0 0 2px;}
+.soxui-pagination>a:last-child,
+.soxui-pagination>a:last-child em{border-radius: 0 2px 2px 0;}
+.soxui-pagination>*:first-child{margin-left: 0!important;}
+.soxui-pagination>*:last-child{margin-right: 0!important;}
+.soxui-pagination a,
+.soxui-pagination span,
+.soxui-pagination input, 
+.soxui-pagination button,
+.soxui-pagination select{border: 1px solid #e2e2e2;}
+.soxui-pagination a,
+.soxui-pagination span{display: inline-block; *display: inline; *zoom: 1; vertical-align: middle; padding: 0 15px; height: 28px; line-height: 28px; margin: 0 -1px 5px 0; background-color: #fff; color: #333; font-size: 12px;}
+.soxui-pagination a:hover{color: #009688;}
+.soxui-pagination em{font-style: normal;}
+.soxui-pagination .soxui-pagination-spr{color:#999; font-weight: 700;}
+.soxui-pagination a{ text-decoration: none;}
+.soxui-pagination .soxui-pagination-curr{position: relative;}
+.soxui-pagination .soxui-pagination-curr em{position: relative; color: #fff;}
+.soxui-pagination .soxui-pagination-curr .soxui-pagination-em{position: absolute;box-sizing: content-box; left: -1px; top: -1px; padding: 1px; width: 100%; height: 100%; background-color: #009688; }
+.soxui-pagination-em{border-radius: 2px;}
+.soxui-pagination-prev em,
+.soxui-pagination-next em{font-family: Sim sun; font-size: 16px;}
+
+.soxui-pagination .soxui-pagination-count,
+.soxui-pagination .soxui-pagination-limits,
+.soxui-pagination .soxui-pagination-refresh,
+.soxui-pagination .soxui-pagination-skip{margin-left: 10px; margin-right: 10px; padding: 0; border: none;}
+.soxui-pagination .soxui-pagination-limits,
+.soxui-pagination .soxui-pagination-refresh{vertical-align: top;}
+.soxui-pagination .soxui-pagination-refresh i{font-size: 18px; cursor: pointer;}
+.soxui-pagination select{height: 28px; padding: 3px; border-radius: 2px; cursor: pointer;position: relative;top: 1px;}
+.soxui-pagination .soxui-pagination-skip{height: 30px; line-height: 30px; color: #999;}
+.soxui-pagination input, .soxui-pagination button{height: 28px; line-height: 28px; border-radius: 2px; vertical-align: top;  background-color: #fff; box-sizing: border-box;position: relative;top: 1px;}
+.soxui-pagination input{display: inline-block; width: 40px; margin: 0 10px; padding: 0 3px; text-align: center;}
+.soxui-pagination input:focus,
+.soxui-pagination select:focus{border-color: #009688!important;}
+.soxui-pagination button{margin-left: 10px; padding: 0 10px; cursor: pointer;}
+.soxui-pagination .soxui-pagination-btn{background-color: #e2e2e2;}

@@ -11,37 +11,45 @@
 
     function soxui()
     {
+        this.version = '1.0.0';
+
         var uibase = '';
         var config = {
             redeclare: true,
         };
 
         uibase = document.currentScript ? document.currentScript.src : function(){
-            for(var i = document.scripts.length - 1; i > 0; i--){
-                if(document.scripts[i].substr(document.scripts[i].lastIndexOf('/')+1) === 'soxui.js') return document.scripts[i];
+            for(var i = document.scripts.length - 1; i > 0; i--)
+            {
+                if(document.scripts[i].readyState === 'interactive') return document.scripts[i].src;
             }
+
+            return document.scripts[0].src;
         }();
 
         uibase = uibase.substring(0,uibase.lastIndexOf('/')+1);
 
         this.use = function(modules,callback,extension)
         {
+            var that = this;
             var head = document.getElementsByTagName('head')[0];
-            var func = '';
+            var func = 'var $ = soxui.$;\r\n';;
             var file = {};
 
-            var load_module = function(fid,path,version)
+            if(typeof(window.jQuery) != 'undefined') this.$ = window.jQuery;
+
+            var load_module = function(fid,path)
             {
                 var node = document.createElement('script');
 
                 node.type = 'text/javascript';
-                node.src  = file[i].path+'?v='+version;
+                node.src  = file[fid].path+'?v='+that.version;
 
                 if(node.addEventListener)
                 {
                     node.addEventListener('load', function(event){
                         file_loaded(fid,node,event);
-                    }, false);
+                    },false);
                 }
                 else
                 {
@@ -60,10 +68,32 @@
                     file[fid].load = true;
                     head.removeChild(node);
 
-                    for(var i in file)
+                    if(that[fid].modules.length > 0)
                     {
-                        if(!file[i].load) return false;
+                        for(var i in that[fid].modules)
+                        {
+                            if(typeof(file[that[fid].modules[i]]) == 'undefined')
+                            {
+                                func += 'var '+that[fid].modules[i]+' = soxui.'+that[fid].modules[i]+';\r\n';
+
+                                file[that[fid].modules[i]] = {path: uibase+'modules/'+that[fid].modules[i]+'.js',load: false};
+                            }
+                            else
+                            {
+                                that[fid].modules[i] = '';
+                            }
+                        }
+
+                        for(var i in that[fid].modules)
+                        {
+                            if(that[fid].modules[i] != '') load_module(that[fid].modules[i],uibase+'modules/'+that[fid].modules[i]+'.js');
+                        }
                     }
+                }
+
+                for(var i in file)
+                {
+                    if(!file[i].load) return false;
                 }
 
                 if(typeof(callback) == 'function')
@@ -83,15 +113,6 @@
                         callback();
                     }
                 }
-            }
-
-            if(typeof(window.jQuery) != 'undefined')
-            {
-                this.$ = window.jQuery;
-            }
-            else
-            {
-                file.jquery = {path: uibase+'modules/jquery.js',load: false};
             }
 
             for(var i in modules)
@@ -120,14 +141,58 @@
                 }
             }
 
-            for(var i in file)
+            if(typeof(window.jQuery) != 'undefined')
             {
-                load_module(i,file[i].path,this.version);
+                if(modules.length > 0)
+                {
+                    for(var i in file)
+                    {
+                        load_module(i,file[i].path);
+                    }
+                }
+                else
+                {
+                    file_loaded();
+                }
             }
-
-            if(typeof(window.jQuery) != 'undefined' && modules.length == 0)
+            else
             {
-                file_loaded();
+                var jq_node = document.createElement('script');
+
+                var jq_load = function(node,event)
+                {
+                    head.removeChild(node);
+
+                    if(modules.length > 0)
+                    {
+                        for(var i in file)
+                        {
+                            load_module(i,file[i].path);
+                        }
+                    }
+                    else
+                    {
+                        file_loaded();
+                    }
+                }
+
+                jq_node.type = 'text/javascript';
+                jq_node.src  = uibase+'modules/jquery.js?v='+that.version;
+
+                if(jq_node.addEventListener)
+                {
+                    jq_node.addEventListener('load', function(event){
+                        jq_load(jq_node,event);
+                    },false);
+                }
+                else
+                {
+                    jq_node.attachEvent('onreadystatechange', function(event){
+                        jq_load(jq_node,event);
+                    });
+                }
+
+                head.appendChild(jq_node);
             }
         }
 
@@ -140,8 +205,6 @@
                 config[i] = options[i];
             }
         }
-
-        this.version = '1.0.0';
 
         return this;
     }

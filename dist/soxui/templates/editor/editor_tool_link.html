@@ -1,0 +1,31 @@
+{{# var time = (new Date()).getTime(); }}
+<form id="link-{{time}}" style="margin: 15px;">
+    <div class="form-group">
+        <label for="name-{{time}}">名称</label>
+        <input type="text" class="form-control" name="text" value="{{(d.text||'')}}" autocomplete="off" id="name-{{time}}">
+    </div>
+
+    <div class="form-group">
+        <label for="url-{{time}}">URL</label>
+        <input type="text" class="form-control" name="href" value="{{(d.href||'')}}" autocomplete="off" id="url-{{time}}">
+    </div>
+
+    <div class="form-group">
+        <label>打开方式</label>
+        &nbsp;&nbsp;&nbsp;
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" id="target-{{time}}-1" name="target" value="_self" {{((d.target == '_self' || !d.target) ? 'checked' : '')}}>
+            <label class="form-check-label" for="target-{{time}}-1">当前窗口</label>
+        </div>
+
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" id="target-{{time}}-2" name="target" value="_blank" {{(d.target==='_blank' ? 'checked' : '')}}>
+            <label class="form-check-label" for="target-{{time}}-2">新窗口</label>
+        </div>
+    </div>
+
+    <div class="form-group" style="text-align: center;">
+        <button type="button" class="btn btn-primary" sox-filter="editor-ok" sox-editor="link-{{time}}">确定</button>
+        <button type="button" class="btn btn-secondary" sox-filter="editor-no">取消</button>
+    </div>
+</form>

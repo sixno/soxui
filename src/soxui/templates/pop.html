@@ -1,0 +1,50 @@
+<div class="sox-layer sox-layer-{{d.ready.type[d.type]}} {{(d.skin||'')}}" id="sox-layer{{(d.times)}}" type="{{d.ready.type[d.type]}}" times="{{d.times}}" showtime="{{d.time}}" style="z-index: {{d.zIndex}};width: {{d.area[0]}};height: {{d.area[1]}};{{(d.fixed ? '' : 'position:absolute;')}}">
+    {{# if(d.type != 3){ }}
+    <div class="modal" style="display:block;position:static;overflow:visible;"><div class="{{(d.nomc ? '' : 'modal-content')}}">
+        {{# if(d.title){ }}
+        <div class="sox-layer-header modal-header" style="padding:0;"><div class="sox-layer-title" style="font-weight:bold;">
+            {{d.title}}
+        </div></div>
+        {{# } }}
+
+        <div id="{{(d.id||'')}}" class="sox-layer-mainer modal-body {{((d.type == 0 && d.icon !== -1) ? 'sox-layer-padding' : '')}} {{(d.type == 3 ? 'sox-layer-loading'+d.icon : '')}}">
+            {{# if(d.type == 0 && d.icon !== -1){ }}
+            <i class="sox-layer-ico sox-layer-ico {{d.icon}}"></i>
+            {{# } }}
+
+            {{# if(d.type != 2){ }}
+            {{d.content}}
+            {{# }else{ }}
+            <iframe scrolling="{{d.scroll}}" allowtransparency="true" id="sox-layer-iframe{{d.times}}" name="sox-layer-iframe{{d.times}}" onload="this.className=\'\';" class="sox-layer-load" frameborder="0" src="{{d.content}}"></iframe>
+            {{# } }}
+        </div>
+        
+        {{# if(d.btn){ }}
+        <div class="sox-layer-footer modal-footer" style="padding:0;"><div class="sox-layer-btn">
+        {{# if(typeof(d.btn) == 'string') d.btn = [d.btn]; }}
+        {{# for(var i = 0, len = d.btn.length; i < len; i++){ }}
+        <a class="sox-layer-btn{{i}}">{{d.btn[i]}}</a>
+        {{# } }}
+        </div></div>
+        {{# } }}
+
+        <span class="sox-layer-setwin">
+            {{# if(d.ismax){ }}
+            <!-- <a class="sox-layer-min" href="javascript:;"><cite></cite></a> -->
+            <a class="sox-layer-ico sox-layer-max" href="javascript:;"></a>
+            {{# } }}
+            {{# if(d.closeBtn){ }}
+            <a class="sox-layer-ico sox-layer-close sox-layer-close1" href="javascript:;"></a>
+            {{# } }}
+        </span>
+
+        {{# if(d.resize){ }}
+        <span class="sox-layer-resize"></span>
+        {{# } }}
+    </div></div>
+    {{# }else{ }}
+    <div id="{{(d.id||'')}}" class="sox-layer-mainer {{((d.type == 0 && d.icon !== -1) ? 'sox-layer-padding' : '')}} sox-layer-loading{{d.icon}}">
+        {{d.content}}
+    </div>
+    {{# } }}
+</div>

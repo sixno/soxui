@@ -1,8 +1,180 @@
 @import '../soxui.less.config';
 
-.soxui {
-	width: 100%;
-	height: 100%;
-	position: relative;
-	background: url("@{base_url}images/bg.png");
+*, *:before, *:after, *.active.focus, *.active:focus,*.focus, *:active.focus, *:active:focus, *:focus {
+	outline: none !important;
+	box-shadow: none !important;
 }
+
+.soxui-clear{clear: both; *zoom: 1;}
+.soxui-clear:after{content:'\20'; clear:both; *zoom:1; display:block; height:0;}
+
+/** 图标字体 **/
+@font-face {font-family: 'soxui-icon';
+  src: url('@{base_url}fonts/iconfont.eot?v=240');
+  src: url('@{base_url}fonts/iconfont.eot?v=240#iefix') format('embedded-opentype'),
+  url('@{base_url}fonts/iconfont.svg?v=240#iconfont') format('svg'),
+  url('@{base_url}fonts/iconfont.woff?v=240') format('woff'),
+  url('@{base_url}fonts/iconfont.ttf?v=240') format('truetype');
+}
+                    
+.soxui-icon{
+  font-family:"soxui-icon" !important;
+  font-size: 16px;
+  font-style: normal;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* font-class */
+.soxui-icon-reply-fill:before{content:"\e611"}
+.soxui-icon-set-fill:before{content:"\e614"}
+.soxui-icon-menu-fill:before{content:"\e60f"}
+.soxui-icon-search:before{content:"\e615"}
+.soxui-icon-share:before{content:"\e641"}
+.soxui-icon-set-sm:before{content:"\e620"}
+.soxui-icon-engine:before{content:"\e628"}
+.soxui-icon-close:before{content:"\1006"}
+.soxui-icon-close-fill:before{content:"\1007"}
+.soxui-icon-chart-screen:before{content:"\e629"}
+.soxui-icon-star:before{content:"\e600"}
+.soxui-icon-circle-dot:before{content:"\e617"}
+.soxui-icon-chat:before{content:"\e606"}
+.soxui-icon-release:before{content:"\e609"}
+.soxui-icon-list:before{content:"\e60a"}
+.soxui-icon-chart:before{content:"\e62c"}
+.soxui-icon-ok-circle:before{content:"\1005"}
+.soxui-icon-layim-theme:before{content:"\e61b"}
+.soxui-icon-table:before{content:"\e62d"}
+.soxui-icon-right:before{content:"\e602"}
+.soxui-icon-left:before{content:"\e603"}
+.soxui-icon-cart-simple:before{content:"\e698"}
+.soxui-icon-face-cry:before{content:"\e69c"}
+.soxui-icon-face-smile:before{content:"\e6af"}
+.soxui-icon-survey:before{content:"\e6b2"}
+.soxui-icon-tree:before{content:"\e62e"}
+.soxui-icon-upload-circle:before{content:"\e62f"}
+.soxui-icon-add-circle:before{content:"\e61f"}
+.soxui-icon-download-circle:before{content:"\e601"}
+.soxui-icon-templeate-1:before{content:"\e630"}
+.soxui-icon-util:before{content:"\e631"}
+.soxui-icon-face-surprised:before{content:"\e664"}
+.soxui-icon-edit:before{content:"\e642"}
+.soxui-icon-speaker:before{content:"\e645"}
+.soxui-icon-down:before{content:"\e61a"}
+.soxui-icon-file:before{content:"\e621"}
+.soxui-icon-layouts:before{content:"\e632"}
+.soxui-icon-rate-half:before{content:"\e6c9"}
+.soxui-icon-add-circle-fine:before{content:"\e608"}
+.soxui-icon-prev-circle:before{content:"\e633"}
+.soxui-icon-read:before{content:"\e705"}
+.soxui-icon-404:before{content:"\e61c"}
+.soxui-icon-carousel:before{content:"\e634"}
+.soxui-icon-help:before{content:"\e607"}
+.soxui-icon-code-circle:before{content:"\e635"}
+.soxui-icon-water:before{content:"\e636"}
+.soxui-icon-username:before{content:"\e66f"}
+.soxui-icon-find-fill:before{content:"\e670"}
+.soxui-icon-about:before{content:"\e60b"}
+.soxui-icon-location:before{content:"\e715"}
+.soxui-icon-up:before{content:"\e619"}
+.soxui-icon-pause:before{content:"\e651"}
+.soxui-icon-date:before{content:"\e637"}
+.soxui-icon-layim-uploadfile:before{content:"\e61d"}
+.soxui-icon-delete:before{content:"\e640"}
+.soxui-icon-play:before{content:"\e652"}
+.soxui-icon-top:before{content:"\e604"}
+.soxui-icon-friends:before{content:"\e612"}
+.soxui-icon-refresh-3:before{content:"\e9aa"}
+.soxui-icon-ok:before{content:"\e605"}
+.soxui-icon-layer:before{content:"\e638"}
+.soxui-icon-face-smile-fine:before{content:"\e60c"}
+.soxui-icon-dollar:before{content:"\e659"}
+.soxui-icon-group:before{content:"\e613"}
+.soxui-icon-layim-download:before{content:"\e61e"}
+.soxui-icon-picture-fine:before{content:"\e60d"}
+.soxui-icon-link:before{content:"\e64c"}
+.soxui-icon-diamond:before{content:"\e735"}
+.soxui-icon-log:before{content:"\e60e"}
+.soxui-icon-rate-solid:before{content:"\e67a"}
+.soxui-icon-fonts-del:before{content:"\e64f"}
+.soxui-icon-unlink:before{content:"\e64d"}
+.soxui-icon-fonts-clear:before{content:"\e639"}
+.soxui-icon-triangle-r:before{content:"\e623"}
+.soxui-icon-circle:before{content:"\e63f"}
+.soxui-icon-radio:before{content:"\e643"}
+.soxui-icon-align-center:before{content:"\e647"}
+.soxui-icon-align-right:before{content:"\e648"}
+.soxui-icon-align-left:before{content:"\e649"}
+.soxui-icon-loading-1:before{content:"\e63e"}
+.soxui-icon-return:before{content:"\e65c"}
+.soxui-icon-fonts-strong:before{content:"\e62b"}
+.soxui-icon-upload:before{content:"\e67c"}
+.soxui-icon-dialogue:before{content:"\e63a"}
+.soxui-icon-video:before{content:"\e6ed"}
+.soxui-icon-headset:before{content:"\e6fc"}
+.soxui-icon-cellphone-fine:before{content:"\e63b"}
+.soxui-icon-add-1:before{content:"\e654"}
+.soxui-icon-face-smile-b:before{content:"\e650"}
+.soxui-icon-fonts-html:before{content:"\e64b"}
+.soxui-icon-form:before{content:"\e63c"}
+.soxui-icon-cart:before{content:"\e657"}
+.soxui-icon-camera-fill:before{content:"\e65d"}
+.soxui-icon-tabs:before{content:"\e62a"}
+.soxui-icon-fonts-code:before{content:"\e64e"}
+.soxui-icon-fire:before{content:"\e756"}
+.soxui-icon-set:before{content:"\e716"}
+.soxui-icon-fonts-u:before{content:"\e646"}
+.soxui-icon-triangle-d:before{content:"\e625"}
+.soxui-icon-tips:before{content:"\e702"}
+.soxui-icon-picture:before{content:"\e64a"}
+.soxui-icon-more-vertical:before{content:"\e671"}
+.soxui-icon-flag:before{content:"\e66c"}
+.soxui-icon-loading:before{content:"\e63d"}
+.soxui-icon-fonts-i:before{content:"\e644"}
+.soxui-icon-refresh-1:before{content:"\e666"}
+.soxui-icon-rmb:before{content:"\e65e"}
+.soxui-icon-home:before{content:"\e68e"}
+.soxui-icon-user:before{content:"\e770"}
+.soxui-icon-notice:before{content:"\e667"}
+.soxui-icon-login-weibo:before{content:"\e675"}
+.soxui-icon-voice:before{content:"\e688"}
+.soxui-icon-upload-drag:before{content:"\e681"}
+.soxui-icon-login-qq:before{content:"\e676"}
+.soxui-icon-snowflake:before{content:"\e6b1"}
+.soxui-icon-file-b:before{content:"\e655"}
+.soxui-icon-template:before{content:"\e663"}
+.soxui-icon-auz:before{content:"\e672"}
+.soxui-icon-console:before{content:"\e665"}
+.soxui-icon-app:before{content:"\e653"}
+.soxui-icon-prev:before{content:"\e65a"}
+.soxui-icon-website:before{content:"\e7ae"}
+.soxui-icon-next:before{content:"\e65b"}
+.soxui-icon-component:before{content:"\e857"}
+.soxui-icon-more:before{content:"\e65f"}
+.soxui-icon-login-wechat:before{content:"\e677"}
+.soxui-icon-shrink-right:before{content:"\e668"}
+.soxui-icon-spread-left:before{content:"\e66b"}
+.soxui-icon-camera:before{content:"\e660"}
+.soxui-icon-note:before{content:"\e66e"}
+.soxui-icon-refresh:before{content:"\e669"}
+.soxui-icon-female:before{content:"\e661"}
+.soxui-icon-male:before{content:"\e662"}
+.soxui-icon-password:before{content:"\e673"}
+.soxui-icon-senior:before{content:"\e674"}
+.soxui-icon-theme:before{content:"\e66a"}
+.soxui-icon-tread:before{content:"\e6c5"}
+.soxui-icon-praise:before{content:"\e6c6"}
+.soxui-icon-star-fill:before{content:"\e658"}
+.soxui-icon-rate:before{content:"\e67b"}
+.soxui-icon-template-1:before{content:"\e656"}
+.soxui-icon-vercode:before{content:"\e679"}
+.soxui-icon-cellphone:before{content:"\e678"}
+.soxui-icon-screen-full:before{content:"\e622";}
+.soxui-icon-screen-restore:before{content:"\e758";}
+.soxui-icon-cols:before{content:"\e610";}
+.soxui-icon-export:before{content:"\e67d";}
+.soxui-icon-print:before {content:"\e66d";}
+.soxui-icon-slider:before {content: "\e714";}
+
+/** 代码修饰器 **/
+.soxui-code{position: relative; margin: 10px 0; padding: 15px; line-height: 20px; border: 1px solid #ddd; border-left-width: 6px; background-color: #F2F2F2; color: #333; font-family: Courier New; font-size: 12px;}

@@ -11,6 +11,9 @@
 
     function tpl()
     {
+        this.version = '1.0.0';
+        this.modules = [];
+
         var config = {
             tag_open: '{{',
             tag_shut: '}}'
@@ -31,7 +34,7 @@
                                          .replace(/'/g, '&#39;')
                                          .replace(/"/g, '&quot;');
             },
-            error: function(e,log){
+            error: function(e, log){
                 var error = 'soxtpl Error：';
                 typeof(console) == 'object' && console.error(error+e+'\n'+(log || ''));
                 return error + e;
@@ -98,8 +101,6 @@
                 config[i] = options[i];
             }
         }
-        
-        this.version = '1.0.0';
 
         return this;
     }
