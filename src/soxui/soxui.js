@@ -21,13 +21,13 @@
         uibase = document.currentScript ? document.currentScript.src : function(){
             for(var i = document.scripts.length - 1; i > 0; i--)
             {
-                if(document.scripts[i].readyState === 'interactive') return document.scripts[i].src;
+                if(document.scripts[i].src.indexOf('/soxui/soxui.js') > 0) return document.scripts[i].src;
             }
-
-            return document.scripts[0].src;
         }();
 
         uibase = uibase.substring(0,uibase.lastIndexOf('/')+1);
+
+        this.base = uibase;
 
         this.use = function(modules,callback,extension)
         {

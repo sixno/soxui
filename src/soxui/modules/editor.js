@@ -47,12 +47,17 @@
         var version  = this.version;
 
         jspath = document.currentScript ? document.currentScript.src : function(){
-            for(var i = document.scripts.length - 1; i > 0; i--)
+            if(soxui.base)
             {
-                if(document.scripts[i].readyState === 'interactive') return document.scripts[i].src;
+                return soxui.base+'modules/editor.js';
             }
-
-            return document.scripts[0].src;
+            else
+            {
+                for(var i = document.scripts.length - 1; i > 0; i--)
+                {
+                    if(document.scripts[i].src.indexOf('/soxui/modules/editor.js') > 0) return document.scripts[i].src;
+                }
+            }
         }();
 
         fapath = jspath.substring(0,jspath.lastIndexOf('/')-7)+'images/face/';

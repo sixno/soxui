@@ -45,9 +45,16 @@
         var template = false;
 
         jspath = document.currentScript ? document.currentScript.src : function(){
-            for(var i = document.scripts.length - 1; i > 0; i--)
+            if(soxui.base)
             {
-                if(document.scripts[i].readyState === 'interactive') return document.scripts[i].src;
+                return soxui.base+'modules/pop.js';
+            }
+            else
+            {
+                for(var i = document.scripts.length - 1; i > 0; i--)
+                {
+                    if(document.scripts[i].src.indexOf('/soxui/modules/pop.js') > 0) return document.scripts[i].src;
+                }
             }
 
             return document.scripts[0].src;
@@ -920,7 +927,7 @@
                 typeof ready.end[index] === 'function' && ready.end[index]();
                 delete ready.end[index];
 
-                if($('.sox-layer').size() == 0)
+                if($('.sox-layer').length == 0)
                 {
                     $('.sox-layer-move').remove();
 
