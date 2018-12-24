@@ -5,6 +5,32 @@
 // .sox-layer-footer {position: absolute;left: 0;bottom: 0;width: 100%;}
 // .sox-layer-mainer {position: absolute;left: 0;top: 0;width: 100%;}
 
+.sox-layer {
+  .modal {
+    display: block;
+    position: static;
+    overflow: visible;
+    height: 100%;
+
+    .modal-content {
+      height: 100%;
+    }
+
+    .modal-header {
+      display: block;
+      padding: 0;
+    }
+
+    .modal-body {
+      padding: 0;
+    }
+
+    .modal-footer {
+      padding: 0;
+    }
+  }
+}
+
 /* common */
 .sox-layer-shade, .sox-layer{position:fixed; pointer-events: auto;}
 .sox-layer-shade{top:0; left:0; width:100%; height:100%;}
@@ -48,7 +74,7 @@
 @-webkit-keyframes layer-shake{0%,100%{-webkit-transform:translateX(0);transform:translateX(0)}10%,30%,50%,70%,90%{-webkit-transform:translateX(-10px);transform:translateX(-10px)}20%,40%,60%,80%{-webkit-transform:translateX(10px);transform:translateX(10px)}}@keyframes layer-shake{0%,100%{-webkit-transform:translateX(0);-ms-transform:translateX(0);transform:translateX(0)}10%,30%,50%,70%,90%{-webkit-transform:translateX(-10px);-ms-transform:translateX(-10px);transform:translateX(-10px)}20%,40%,60%,80%{-webkit-transform:translateX(10px);-ms-transform:translateX(10px);transform:translateX(10px)}}.layer-anim-06{-webkit-animation-name:layer-shake;animation-name:layer-shake}@-webkit-keyframes fadeIn{0%{opacity:0}100%{opacity:1}}
 
 /* 标题栏 */
-.sox-layer-title{padding:0 80px 0 20px; height:42px; line-height:42px; font-size:14px; color:#333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+.sox-layer-title{padding:0 80px 0 20px; height:42px; line-height:42px; font-size:14px; color:#333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;font-weight: bold;}
 .sox-layer-setwin{position:absolute; right:15px; *right:0; top:15px; font-size:0; line-height: initial;}
 .sox-layer-setwin a{position:relative; width: 16px; height:16px; margin-left:10px; font-size:12px;}
 .sox-layer-setwin .sox-layer-min cite{position:absolute; width:14px; height:2px; left:0; top:50%; margin-top:-1px; background-color:#2E2D3C; cursor:pointer;}
@@ -85,7 +111,8 @@
 .sox-layer-msg{min-width:180px; border:1px solid #D3D4D3; box-shadow: none;}
 .sox-layer-hui{min-width:100px;  background-color: #000; filter:alpha(opacity=60); background-color: rgba(0,0,0,0.6); color: #fff; border:none;}
 .sox-layer-hui .sox-layer-mainer{padding:12px 25px; text-align:center;}
-.sox-layer-dialog .sox-layer-padding{padding: 20px 20px 20px 55px; text-align: left;}
+.sox-layer-dialog .sox-layer-padding{padding: 20px 20px 20px 55px !important; text-align: left;}
+.sox-layer-dialog .sox-layer-padding-1{padding: 20px !important; text-align: left;}
 .sox-layer-page .sox-layer-mainer{position:relative; overflow:auto;}
 // .sox-layer-page .sox-layer-btn,.sox-layer-iframe .sox-layer-btn{padding-top:10px;}
 .sox-layer-nobg{background:none;}
