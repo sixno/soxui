@@ -21,23 +21,23 @@
             return false;
         }
 
-        this.play = function(elem,callback)
+        this.play = function(eid,draw,events)
         {
             var that = this;
             var conf = {};
 
             var sketch = function(p)
             {
-                if(typeof(elem) == 'string')
+                if(typeof(eid) == 'string')
                 {
-                    conf.elem = elem;
+                    conf.eid = eid;
                 }
                 else
                 {
-                    conf = elem;
+                    conf = eid;
                 }
 
-                var ele = document.querySelector(conf.elem);
+                var ele = document.getElementById(conf.eid);
 
                 if(!conf.width)
                 {
@@ -51,16 +51,35 @@
 
                 conf.fps = conf.fps || 24;
 
+                if(conf.pre)
+                {
+                    p.preload = function()
+                    {
+                        conf.pre(p,conf);
+                    }
+                }
+
                 p.setup = function()
                 {
                     var obj = p.createCanvas(conf.width,conf.height);
 
-                    p.frameRate(20);
-                    p.noStroke();
+                    obj.canvas.id = conf.eid+'-canvas';
 
-                    if(conf.setup)
+                    obj.canvas.style.display = 'block';
+
+                    p.frameRate(conf.fps);
+
+                    if(conf.set)
                     {
-                        conf.setup(p,obj);
+                        conf.set(p,conf);
+                    }
+
+                    if(conf.css)
+                    {
+                        for(var i in conf.css)
+                        {
+                            obj.canvas.style[i] = conf.css[i];
+                        }
                     }
 
                     ele.appendChild(obj.canvas);
@@ -68,7 +87,17 @@
 
                 p.draw = function()
                 {
-                    callback(p,conf);
+                    draw(p,conf);
+                }
+
+                if(events)
+                {
+                    for(var i in events)
+                    {
+                        p[i] = function(){
+                            events[i](p,conf);
+                        };
+                    }
                 }
             }
 

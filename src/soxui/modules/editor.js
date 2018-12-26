@@ -93,7 +93,7 @@
             this.config = {
                 //默认工具bar
                 tool: [
-                    'strong', 'italic', 'underline', 'del'
+                    'strong', 'italic', 'underline', 'del', 'h1', 'h2'
                     ,'|'
                     ,'left', 'center', 'right'
                     ,'|'
@@ -112,6 +112,8 @@
         };
         
         //建立编辑器
+        var ed_elem;
+
         this.build = function(id, settings){
             settings = settings || {};
             
@@ -134,15 +136,15 @@
                     }
                 });
                 return node.join('');
-            }()
+            }();
  
             
-            ,ed_elem = $(['<div class="'+ ELEM +'">'
+            ed_elem = $(['<div class="'+ ELEM +'">'
                 ,'<div class="soxui-unselect soxui-editor-tool">'+ tool +'</div>'
                 ,'<div class="soxui-editor-iframe">'
                     ,'<iframe id="'+ name +'" name="'+ name +'" textarea="'+ id +'" frameborder="0"></iframe>'
                 ,'</div>'
-            ,'</div>'].join(''))
+            ,'</div>'].join(''));
             
             //编辑器不兼容ie8以下
             if(device.ie && device.ie < 8){
@@ -215,6 +217,7 @@
                 ,style = $(['<style>'
                     ,'*{margin: 0; padding: 0;}'
                     ,'body{padding: 10px; line-height: 20px; overflow-x: hidden; word-wrap: break-word; font: 14px Helvetica Neue,Helvetica,PingFang SC,Microsoft YaHei,Tahoma,Arial,sans-serif; -webkit-box-sizing: border-box !important; -moz-box-sizing: border-box !important; box-sizing: border-box !important;}'
+                    ,'h1,h2,h3,h4,h5,h6{margin-bottom: 10px;}'
                     ,'a{color:#01AAED; text-decoration:none;}a:hover{color:#c00}'
                     ,'p{margin-bottom: 10px;}'
                     ,'img{display: inline-block; border: none; vertical-align: middle;}'
@@ -235,7 +238,7 @@
         
         //获得iframe窗口对象
         ,getWin = function(index){
-            var iframe = $('#LAY_editor_'+ index)
+            var iframe = $('#sox_editor_'+ index)
             ,iframeWin = iframe.prop('contentWindow');
             return [iframeWin, iframe];
         }
@@ -262,11 +265,24 @@
                     ,parentNode = container.parentNode;
                     
                     if(parentNode.tagName.toLowerCase() === 'pre'){
-                        if(e.shiftKey) return
+                        if(e.shiftKey) return;
                         soxui.pop.msg('请暂时用shift+enter');
                         return false;
                     }
-                    iframeDOM.execCommand('formatBlock', false, '<p>');
+
+                    switch(parentNode.tagName.toLowerCase())
+                    {
+                        case 'h1':
+                            ed_elem.find('.soxui-editor-tool .editor-tool-h1').removeClass('editor-tool-active');
+                            break;
+                        case 'h2':
+                            ed_elem.find('.soxui-editor-tool .editor-tool-h2').removeClass('editor-tool-active');
+                            break;
+
+                        default:
+                            iframeDOM.execCommand('formatBlock', false, '<p>');
+                            break;
+                    }
                 }
             });
             
@@ -373,35 +389,47 @@
                 var tagName = this.tagName.toLowerCase()
                 ,textAlign = this.style.textAlign;
 
-                //文字
-                if(tagName === 'b' || tagName === 'strong'){
-                    item('b').addClass(CHECK)
-                }
-                if(tagName === 'i' || tagName === 'em'){
-                    item('i').addClass(CHECK)
-                }
-                if(tagName === 'u'){
-                    item('u').addClass(CHECK)
-                }
-                if(tagName === 'strike'){
-                    item('d').addClass(CHECK)
-                }
-                
-                //对齐
-                if(tagName === 'p'){
-                    if(textAlign === 'center'){
-                        item('center').addClass(CHECK);
-                    } else if(textAlign === 'right'){
-                        item('right').addClass(CHECK);
-                    } else {
-                        item('left').addClass(CHECK);
-                    }
-                }
-                
-                //超链接
-                if(tagName === 'a'){
-                    item('link').addClass(CHECK);
-                    item('unlink').removeClass(ABLED);
+                switch(tagName)
+                {
+                    //文字
+                    case 'b':
+                    case 'strong':
+                        item('b').addClass(CHECK);
+                        break;
+
+                    case 'i':
+                    case 'em':
+                        item('i').addClass(CHECK);
+                        break;
+
+                    case 'u':
+                        item('u').addClass(CHECK);
+                        break;
+
+                    case 'strike':
+                        item('d').addClass(CHECK);
+                        break;
+
+                    case 'h1':
+                    case 'h2':
+                        item(tagName).addClass(CHECK);
+
+                    //对齐
+                    case 'p':
+                        if(textAlign === 'center'){
+                            item('center').addClass(CHECK);
+                        } else if(textAlign === 'right'){
+                            item('right').addClass(CHECK);
+                        } else {
+                            item('left').addClass(CHECK);
+                        }
+                        break;
+
+                    //超链接
+                    case 'a':
+                        item('link').addClass(CHECK);
+                        item('unlink').removeClass(ABLED);
+                        break;
                 }
             });
         }
@@ -559,9 +587,37 @@
                 ,container = range.commonAncestorContainer
                 
                 if(command){
-                    iframeDOM.execCommand(command);
+                    switch(command)
+                    {
+                        case 'heading':
+                            if(othis.hasClass('editor-tool-active'))
+                            {
+                                iframeDOM.execCommand('formatBlock', false, '<p>');
+                            }
+                            else
+                            {
+                                iframeDOM.execCommand('formatBlock', false, '<'+events+'>');
+                            }
+                            break;
+
+                        default:
+                            iframeDOM.execCommand(command);
+                            break;
+                    }
+                    
                     if(/justifyLeft|justifyCenter|justifyRight/.test(command)){
-                        iframeDOM.execCommand('formatBlock', false, '<p>');
+                        var tagName = container.parentNode.tagName.toLowerCase();
+                        switch(tagName)
+                        {
+                            case 'h1':
+                            case 'h2':
+                                iframeDOM.execCommand('formatBlock', false, '<'+tagName+'>');
+                                break;
+
+                            default:
+                                iframeDOM.execCommand('formatBlock', false, '<p>');
+                                break;
+                        }
                     }
                     setTimeout(function(){
                         body.focus();
@@ -756,6 +812,8 @@
             ,italic: '<i class="soxui-icon editor-tool-i" title="斜体" lay-command="italic" editor-event="i"">&#xe644;</i>'
             ,underline: '<i class="soxui-icon editor-tool-u" title="下划线" lay-command="underline" editor-event="u"">&#xe646;</i>'
             ,del: '<i class="soxui-icon editor-tool-d" title="删除线" lay-command="strikeThrough" editor-event="d"">&#xe64f;</i>'
+            ,h1: '<i class="soxui-icon editor-tool-h1" title="大标题" lay-command="heading" editor-event="h1""><b>H1</b></i>'
+            ,h2: '<i class="soxui-icon editor-tool-h2" title="小标题" lay-command="heading" editor-event="h2""><b>H2</b></i>'
             
             ,'|': '<span class="editor-tool-mid"></span>'
             
