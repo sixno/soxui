@@ -490,6 +490,8 @@
 
                         if(this.files.length > 0)
                         {
+                            var loading = soxui.pop.load(2);
+
                             var upload = set.uploadImage;
 
                             var all = {'.jpg':1,'.jpeg':1,'.png':1,'.gif':1,'.bmp':1};
@@ -511,7 +513,7 @@
 
                             var data = new FormData();
 
-                            data.append((upload.file||'file'),this.files[0]);
+                            data.append((upload.file || 'file'),this.files[0]);
 
                             this.value = '';
 
@@ -525,6 +527,8 @@
                                 contentType: false,
                                 processData: false,
                                 success: function(obj){
+                                    soxui.pop.close(loading);
+
                                     var img = upload.data(obj);
 
                                     if(img)
@@ -537,6 +541,8 @@
                                     }
                                 },
                                 error: function(){
+                                    soxui.pop.close(loading);
+
                                     soxui.pop.msg('图片上传失败');
                                 },
                                 dataType: 'json'
