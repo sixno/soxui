@@ -46,7 +46,7 @@
             var js_s = tool.exp('^'+config.tag_open+'#', '');
             var js_e = tool.exp(config.tag_shut+'$', '');
 
-            tpl = tpl.replace(/\s+|\r|\t|\n/g, ' ')
+            tpl = tpl.replace(/\r|\n/g, ' ') // /\s+|\r|\t|\n/g
                      .replace(tool.exp(config.tag_open+'#'), config.tag_open+'# ')
                      .replace(tool.exp(config.tag_shut+'}'), '} '+config.tag_shut)
                      .replace(/\\/g, '\\\\').replace(/(?="|')/g, '\\')

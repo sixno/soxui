@@ -15,7 +15,7 @@
             {{# if(d.type != 2){ }}
             {{d.content}}
             {{# }else{ }}
-            <iframe scrolling="{{d.scroll}}" allowtransparency="true" id="sox-layer-iframe{{d.times}}" name="sox-layer-iframe{{d.times}}" onload="this.className=\'\';" class="sox-layer-load" frameborder="0" src="{{d.content}}"></iframe>
+            <iframe scrolling="{{d.scroll}}" allowtransparency="true" id="sox-layer-iframe{{d.times}}" name="sox-layer-iframe{{d.times}}" onload="this.className='';$(this).height($(this).parent().height());" class="sox-layer-load" frameborder="0" src="{{d.content}}"></iframe>
             {{# } }}
         </div>
         
