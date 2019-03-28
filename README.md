@@ -27,7 +27,7 @@ Apart from jQuery, the libraries mentioned above, although relatively easy to us
 
 # SOXUI
 
-我深入地使用过一些前端库，曾深深地依赖过它们，即使我本身地工作更多地是和服务端打交道。
+我深入地使用过一些前端库，曾深深地依赖过它们，即使我本身的工作更多地是和服务端打交道。
 
 在我使用过地前端库中，jQuery是我使用最多的一个工具，严格意义上来说，它并不能算作前端库，它是一个Js工具包，用于方便地操作HTML Dom。
 
