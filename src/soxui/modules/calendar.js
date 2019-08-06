@@ -27,7 +27,7 @@
             }
         }
 
-        var laydate = {
+        var calendar = {
             v: '5.0.9'
             ,config: {} //全局配置项
             ,index: 0
@@ -65,18 +65,38 @@
         //组件构造器
         ,Class = function(options){
             var that = this;
-            that.index = ++laydate.index;
-            that.config = lay.extend({}, that.config, laydate.config, options);
-            laydate.ready(function(){
+            that.index = ++calendar.index;
+            that.config = lay.extend({}, that.config, calendar.config, options);
+            calendar.ready(function(){
                 that.init();
             });
         }
         
         //DOM查找
         ,lay = function(selector){     
-            return new $(selector);
+            return new LAY(selector);
         }
-
+        
+        //DOM构造器
+        ,LAY = function(selector){
+            var index = 0
+            ,nativeDOM = typeof selector === 'object' ? [selector] : (
+                this.selector = selector
+                ,document.querySelectorAll(selector || null)
+            );
+            for(; index < nativeDOM.length; index++){
+                this.push(nativeDOM[index]);
+            }
+        };
+        
+        
+        /*
+            lay对象操作
+        */
+        
+        LAY.prototype = [];
+        LAY.prototype.constructor = LAY;
+        
         //普通对象深度扩展
         lay.extend = function(){
             var ai = 1, args = arguments
@@ -154,7 +174,152 @@
             });
             return elem;
         };
-
+        
+        //追加字符
+        LAY.addStr = function(str, new_str){
+            str = str.replace(/\s+/, ' ');
+            new_str = new_str.replace(/\s+/, ' ').split(' ');
+            lay.each(new_str, function(ii, item){
+                if(!new RegExp('\\b'+ item + '\\b').test(str)){
+                    str = str + ' ' + item;
+                }
+            });
+            return str.replace(/^\s|\s$/, '');
+        };
+        
+        //移除值
+        LAY.removeStr = function(str, new_str){
+            str = str.replace(/\s+/, ' ');
+            new_str = new_str.replace(/\s+/, ' ').split(' ');
+            lay.each(new_str, function(ii, item){
+                var exp = new RegExp('\\b'+ item + '\\b')
+                if(exp.test(str)){
+                    str = str.replace(exp, '');
+                }
+            });
+            return str.replace(/\s+/, ' ').replace(/^\s|\s$/, '');
+        };
+        
+        //查找子元素
+        LAY.prototype.find = function(selector){
+            var that = this;
+            var index = 0, arr = []
+            ,isObject = typeof selector === 'object';
+            
+            this.each(function(i, item){
+                var nativeDOM = isObject ? [selector] : item.querySelectorAll(selector || null);
+                for(; index < nativeDOM.length; index++){
+                    arr.push(nativeDOM[index]);
+                }
+                that.shift();
+            });
+            
+            if(!isObject){
+                that.selector =    (that.selector ? that.selector + ' ' : '') + selector
+            }
+            
+            lay.each(arr, function(i, item){
+                that.push(item);
+            });
+            
+            return that;
+        };
+        
+        //DOM遍历
+        LAY.prototype.each = function(fn){
+            return lay.each.call(this, this, fn);
+        };
+        
+        //添加css类
+        LAY.prototype.addClass = function(className, type){
+            return this.each(function(index, item){
+                item.className = LAY[type ? 'removeStr' : 'addStr'](item.className, className)
+            });
+        };
+        
+        //移除css类
+        LAY.prototype.removeClass = function(className){
+            return this.addClass(className, true);
+        };
+        
+        //是否包含css类
+        LAY.prototype.hasClass = function(className){
+            var has = false;
+            this.each(function(index, item){
+                if(new RegExp('\\b'+ className +'\\b').test(item.className)){
+                    has = true;
+                }
+            });
+            return has;
+        };
+        
+        //添加或获取属性
+        LAY.prototype.attr = function(key, value){
+            var that = this;
+            return value === undefined ? function(){
+                if(that.length > 0) return that[0].getAttribute(key);
+            }() : that.each(function(index, item){
+                item.setAttribute(key, value);
+            });     
+        };
+        
+        //移除属性
+        LAY.prototype.removeAttr = function(key){
+            return this.each(function(index, item){
+                item.removeAttribute(key);
+            });
+        };
+        
+        //设置HTML内容
+        LAY.prototype.html = function(html){
+            return this.each(function(index, item){
+                item.innerHTML = html;
+            });
+        };
+        
+        //设置值
+        LAY.prototype.val = function(value){
+            return this.each(function(index, item){
+                    item.value = value;
+            });
+        };
+        
+        //追加内容
+        LAY.prototype.append = function(elem){
+            return this.each(function(index, item){
+                typeof elem === 'object' 
+                    ? item.appendChild(elem)
+                :    item.innerHTML = item.innerHTML + elem;
+            });
+        };
+        
+        //移除内容
+        LAY.prototype.remove = function(elem){
+            return this.each(function(index, item){
+                elem ? item.removeChild(elem) : item.parentNode.removeChild(item);
+            });
+        };
+        
+        //事件绑定
+        LAY.prototype.on = function(eventName, fn){
+            return this.each(function(index, item){
+                item.attachEvent ? item.attachEvent('on' + eventName, function(e){
+                    e.target = e.srcElement;
+                    fn.call(item, e);
+                }) : item.addEventListener(eventName, fn, false);
+            });
+        };
+        
+        //解除事件
+        LAY.prototype.off = function(eventName, fn){
+            return this.each(function(index, item){
+                item.detachEvent 
+                    ? item.detachEvent('on'+ eventName, fn)    
+                : item.removeEventListener(eventName, fn, false);
+            });
+        };
+        
+        
         /*
             组件操作
         */
@@ -647,7 +812,7 @@
                 if(dateTime.seconds > 59) dateTime.seconds = 0, dateTime.minutes++, error = true;
                 
                 //计算当前月的最后一天
-                thisMaxDate = laydate.getEndDate(dateTime.month + 1, dateTime.year);
+                thisMaxDate = calendar.getEndDate(dateTime.month + 1, dateTime.year);
                 if(dateTime.date > thisMaxDate) dateTime.date = thisMaxDate, error = true;
             }
             
@@ -814,8 +979,8 @@
             thisDate.setFullYear(dateTime.year, dateTime.month, 1);
             startWeek = thisDate.getDay();
             
-            prevMaxDate = laydate.getEndDate(dateTime.month || 12, dateTime.year); //计算上个月的最后一天
-            thisMaxDate = laydate.getEndDate(dateTime.month + 1, dateTime.year); //计算当前月的最后一天
+            prevMaxDate = calendar.getEndDate(dateTime.month || 12, dateTime.year); //计算上个月的最后一天
+            thisMaxDate = calendar.getEndDate(dateTime.month + 1, dateTime.year); //计算当前月的最后一天
             
             //赋值日
             lay.each(tds, function(index, item){
@@ -1624,13 +1789,13 @@
 
         
         //核心接口
-        laydate.render = function(options){
+        calendar.render = function(options){
             var inst = new Class(options);
             return thisDate.call(inst);
         };
         
         //得到某月的最后一天
-        laydate.getEndDate = function(month, year){
+        calendar.getEndDate = function(month, year){
             var thisDate = new Date();
             //设置日期为下个月的第一天
             thisDate.setFullYear(
@@ -1641,7 +1806,7 @@
             return new Date(thisDate.getTime() - 1000*60*60*24).getDate();
         };
 
-        this.render = laydate.render;
+        this.render = calendar.render;
     }
 
     if(typeof(soxui) != 'undefined')
