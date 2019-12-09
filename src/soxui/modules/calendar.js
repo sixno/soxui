@@ -22,7 +22,7 @@
         {
             if(typeof(jQuery) == 'undefined')
             {
-                typeof(console) == 'object' && console.error('soxpop error: sorry, jQuery is required, you must load it before this script.');
+                typeof(console) == 'object' && console.error('soxcalendar error: sorry, jQuery is required, you must load it before this script.');
                 return false;
             }
         }

@@ -179,3 +179,110 @@
 
 /** 代码修饰器 **/
 .soxui-code{position: relative; margin: 10px 0; padding: 15px; line-height: 20px; border: 1px solid #ddd; border-left-width: 6px; background-color: #F2F2F2; color: #333; font-family: Courier New; font-size: 12px;}
+
+/* 其它辅助 */
+.soxui-auxiliar-moving{position: fixed; left: 0; right: 0; top: 0; bottom: 0; width: 100%; height: 100%; background: none; z-index: 9999999999;}
+
+/*
+ 
+  按钮 
+*/
+
+.soxui-btn{display: inline-block; vertical-align: middle; height: 38px; line-height: 38px; padding: 0 18px; background-color: #009688; color: #fff; white-space: nowrap; text-align: center; font-size: 14px; border: none; border-radius: 2px; cursor: pointer; -moz-user-select: none; -webkit-user-select: none; -ms-user-select: none;}
+.soxui-btn:hover{opacity: 0.8; filter:alpha(opacity=80); color: #fff;}
+.soxui-btn:active{opacity: 1; filter:alpha(opacity=100);}
+.soxui-btn+.soxui-btn{margin-left: 10px;}
+
+/* 按钮容器 */
+.soxui-btn-container{font-size: 0;}
+.soxui-btn-container .soxui-btn{margin-right: 10px; margin-bottom: 10px;}
+.soxui-btn-container .soxui-btn+.soxui-btn{margin-left: 0;}
+.soxui-table .soxui-btn-container .soxui-btn{margin-bottom: 9px;}
+
+
+/* 圆角 */.soxui-btn-radius{border-radius: 100px;}
+.soxui-btn .soxui-icon{margin-right: 3px; font-size: 18px; vertical-align: bottom; vertical-align: middle\0;}
+
+/* 原始 */.soxui-btn-primary{border: 1px solid #C9C9C9; background-color: #fff; color: #555;}
+.soxui-btn-primary:hover{border-color: #009688; color: #333}
+/* 百搭 */.soxui-btn-normal{background-color: #1E9FFF;}
+/* 暖色 */.soxui-btn-warm{background-color: #FFB800;}
+/* 警告 */.soxui-btn-danger{background-color: #FF5722;}
+/* 选中 */.soxui-btn-checked{background-color: #5FB878;}
+/* 禁用 */.soxui-btn-disabled,.soxui-btn-disabled:hover,.soxui-btn-disabled:active{border: 1px solid #e6e6e6; background-color: #FBFBFB; color: #C9C9C9; cursor: not-allowed; opacity: 1;}
+
+/* 大型 */.soxui-btn-lg{height: 44px; line-height: 44px; padding: 0 25px; font-size: 16px;}
+/* 小型 */.soxui-btn-sm{height: 30px; line-height: 30px; padding: 0 10px; font-size: 12px;}
+.soxui-btn-sm i{font-size: 16px !important;}
+/* 超小 */.soxui-btn-xs{height: 22px; line-height: 22px; padding: 0 5px; font-size: 12px;}
+.soxui-btn-xs i{font-size: 14px !important;}
+/* 按钮组 */.soxui-btn-group{display: inline-block; vertical-align: middle; font-size: 0;}
+.soxui-btn-group .soxui-btn{margin-left: 0!important; margin-right: 0!important; border-left: 1px solid rgba(255,255,255,.5); border-radius: 0;}
+.soxui-btn-group .soxui-btn-primary{border-left: none;}
+.soxui-btn-group .soxui-btn-primary:hover{border-color: #C9C9C9; color: #009688;}
+.soxui-btn-group .soxui-btn:first-child{border-left: none; border-radius: 2px 0 0 2px;}
+.soxui-btn-group .soxui-btn-primary:first-child{border-left: 1px solid #c9c9c9;}
+.soxui-btn-group .soxui-btn:last-child{border-radius: 0 2px 2px 0;}
+.soxui-btn-group .soxui-btn+.soxui-btn{margin-left: 0;}
+.soxui-btn-group+.soxui-btn-group{margin-left: 10px;}
+/* 流体 */.soxui-btn-fluid{width: 100%;}
+
+/** 表单 **/
+.soxui-input, .soxui-textarea, .soxui-select{height: 38px; line-height: 1.3; line-height: 38px\9; border-width: 1px; border-style: solid; background-color: #fff; border-radius: 2px;}
+.soxui-input::-webkit-input-placeholder,
+.soxui-textarea::-webkit-input-placeholder,
+.soxui-select::-webkit-input-placeholder{line-height: 1.3;}
+.soxui-input, .soxui-textarea{display: block; width: 100%; padding-left: 10px;}
+.soxui-input:hover, .soxui-textarea:hover{border-color: #D2D2D2 !important;}
+.soxui-input:focus, .soxui-textarea:focus{border-color: #C9C9C9 !important;}
+.soxui-textarea{position: relative; min-height: 100px; height: auto; line-height: 20px; padding: 6px 10px; resize: vertical;}
+.soxui-select{padding: 0 10px;}
+.soxui-form select, 
+.soxui-form input[type=checkbox],
+.soxui-form input[type=radio]{display: none;}
+.soxui-form *[lay-ignore]{display: initial;}
+
+.soxui-form-item{margin-bottom: 15px; clear: both; *zoom: 1;}
+.soxui-form-item:after{content:'\20'; clear: both; *zoom: 1; display: block; height:0;}
+.soxui-form-label{position: relative; float: left; display: block; padding: 9px 15px;  width: 80px; font-weight: 400; line-height: 20px; text-align: right;}
+.soxui-form-label-col{display: block; float: none; padding: 9px 0; line-height: 20px; text-align: left;}
+.soxui-form-item .soxui-inline{margin-bottom: 5px; margin-right: 10px;}
+.soxui-input-block, .soxui-input-inline{position: relative;}
+.soxui-input-block{margin-left: 110px; min-height: 36px;}
+.soxui-input-inline{display: inline-block; vertical-align: middle;}
+.soxui-form-item .soxui-input-inline{float: left; width: 190px; margin-right: 10px;}
+.soxui-form-text .soxui-input-inline{width: auto;}
+
+/** 表格 **/
+.soxui-table{width: 100%; margin: 10px 0; background-color: #fff; color: #666;}
+.soxui-table tr{transition: all .3s; -webkit-transition: all .3s;}
+.soxui-table th{text-align: left; font-weight: 400;}
+
+.soxui-table th,
+.soxui-table td,
+.soxui-table[lay-skin="line"],
+.soxui-table[lay-skin="row"],
+.soxui-table-view,
+.soxui-table-tool,
+.soxui-table-header,
+.soxui-table-col-set,
+.soxui-table-total,
+.soxui-table-page,
+.soxui-table-fixed-r,
+.soxui-table-tips-main,
+.soxui-table-grid-down{border-width: 1px; border-style: solid; border-color: #e6e6e6;}
+
+.soxui-table th, .soxui-table td{position: relative; padding: 9px 15px; min-height: 20px; line-height: 20px;  font-size: 14px;}
+
+.soxui-table[lay-skin="line"] th, .soxui-table[lay-skin="line"] td{border-width: 0; border-bottom-width: 1px;}
+.soxui-table[lay-skin="row"] th, .soxui-table[lay-skin="row"] td{border-width: 0;border-right-width: 1px;}
+.soxui-table[lay-skin="nob"] th, .soxui-table[lay-skin="nob"] td{border: none;}
+
+.soxui-table img{max-width:100px;}
+
+/* 大表格 */.soxui-table[lay-size="lg"] th,
+.soxui-table[lay-size="lg"] td{padding-top: 15px; padding-right: 30px; padding-bottom: 15px; padding-left: 30px;}
+.soxui-table-view .soxui-table[lay-size="lg"] .soxui-table-cell{height: 40px; line-height: 40px;}  
+/* 小表格 */.soxui-table[lay-size="sm"] th,
+.soxui-table[lay-size="sm"] td{padding-top: 5px; padding-right: 10px; padding-bottom: 5px; padding-left: 10px; font-size: 12px;}
+.soxui-table-view .soxui-table[lay-size="sm"] .soxui-table-cell{height: 20px; line-height: 20px;} 

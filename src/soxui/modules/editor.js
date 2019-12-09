@@ -12,7 +12,7 @@
     function editor()
     {
         this.version = '1.0.0';
-        this.modules = ['tpl','pop'];
+        this.modules = ['tpl','pop','colorpicker'];
 
         if(typeof(soxui) != 'undefined' && soxui.$)
         {
@@ -93,11 +93,13 @@
             this.config = {
                 //默认工具bar
                 tool: [
-                    'strong', 'italic', 'underline', 'del', 'h1', 'h2'
+                    'strong', 'italic', 'underline', 'del', 'hr', 'fontFomat', 'fontSize'
                     ,'|'
                     ,'left', 'center', 'right'
                     ,'|'
-                    ,'link', 'unlink', 'face', 'image'
+                    ,'link', 'unlink', 'face', 'image', 'table'
+                    ,'|'
+                    ,'colorpicker', 'fontBackColor'
                 ]
                 ,hideTool: []
                 ,height: 280 //默认高
@@ -120,7 +122,7 @@
             var that = this
             ,config = that.config
             ,ELEM = 'soxui-editor', textArea = $(typeof(id)=='string'?'#'+id:id)
-            ,name =    'LAY_editor_'+ (++that.index)
+            ,name =    'soxui_editor_'+ (++that.index)
             ,haveBuild = textArea.next('.'+ELEM)
             
             ,set = $.extend({}, config, settings)
@@ -131,14 +133,14 @@
                     hideTools[item] = true;
                 });
                 $.each(set.tool, function(_, item){
-                    if(tools[item] && !hideTools[item]){
-                        node.push(tools[item]);
+                    if(toolShow(item,that.index) && !hideTools[item]){
+                        node.push(toolShow(item,that.index));
                     }
                 });
                 return node.join('');
             }();
  
-            
+
             ed_elem = $(['<div class="'+ ELEM +'">'
                 ,'<div class="soxui-unselect soxui-editor-tool">'+ tool +'</div>'
                 ,'<div class="soxui-editor-iframe">'
@@ -155,6 +157,41 @@
 
             setIframe.call(that, ed_elem, textArea[0], set);
             textArea.addClass('soxui-hide').after(ed_elem);
+
+            soxui.colorpicker.render({
+                elem: '#soxui-editor-font-color-'+that.index  //绑定元素
+                , predefine: true
+                , colors: ['#cc0000', '#999999', '#ff8c00', '#ffb800', '#ff7800', '#1e90ff', '#009688', '#5fb878', '#ffffff', '#000000']
+                , size: 'ed'
+                , color: '#000'
+                , done: function (color) {
+                    var iframeWin = getWin(that.index);
+                    iframeWin[0].document.execCommand('forecolor', false, color);
+                    setTimeout(function () {
+                        iframeWin[0].document.body.focus();
+                    }, 10);
+                }
+            });
+
+            soxui.colorpicker.render({
+                elem: '#soxui-editor-font-background-'+that.index  //绑定元素
+                , predefine: true
+                , colors: ['#cc0000', '#999999', '#ff8c00', '#ffb800', '#ff7800', '#1e90ff', '#009688', '#5fb878', '#ffffff', '#000000']
+                , size: 'ed'
+                , done: function (color) {console.log('e-index',that.index);
+                    var iframeWin = getWin(that.index);
+                    if (device.ie)
+                        iframeWin[0].document.execCommand('backColor', false, color);
+                    else
+                        iframeWin[0].document.execCommand('hiliteColor', false, color);
+
+                    setTimeout(function () {
+                        iframeWin[0].document.body.focus();
+                    }, 10);
+                }
+            });
+
+            
 
             return that.index;
         };
@@ -217,9 +254,12 @@
                 ,style = $(['<style>'
                     ,'*{margin: 0; padding: 0;}'
                     ,'body{padding: 10px; line-height: 20px; overflow-x: hidden; word-wrap: break-word; font: 14px Helvetica Neue,Helvetica,PingFang SC,Microsoft YaHei,Tahoma,Arial,sans-serif; -webkit-box-sizing: border-box !important; -moz-box-sizing: border-box !important; box-sizing: border-box !important;}'
+                    ,'hr{border: none;border-top: #ddd solid 1px;}'
                     ,'h1,h2,h3,h4,h5,h6{margin-bottom: 10px;}'
                     ,'a{color:#01AAED; text-decoration:none;}a:hover{color:#c00}'
                     ,'p{margin-bottom: 10px;}'
+                    ,'td{border: 1px solid #DDD;width:80px;padding:5px;}'
+                    ,'table{border-collapse: collapse;}'
                     ,'img{display: inline-block; border: none; vertical-align: middle;}'
                     ,'pre{margin: 10px 0; padding: 10px; line-height: 20px; border: 1px solid #ddd; border-left-width: 6px; background-color: #F2F2F2; color: #333; font-family: Courier New; font-size: 12px;}'
                 ,'</style>'].join(''))
@@ -238,8 +278,8 @@
         
         //获得iframe窗口对象
         ,getWin = function(index){
-            var iframe = $('#sox_editor_'+ index)
-            ,iframeWin = iframe.prop('contentWindow');
+            var iframe = $('#soxui_editor_'+ index)
+            ,iframeWin = iframe.prop('contentWindow');console.log('getWin',index);
             return [iframeWin, iframe];
         }
         
@@ -323,7 +363,7 @@
             });
             
             //修饰表格
-            body.find('table').addClass('soxui-table');
+            // body.find('table').addClass('soxui-table');
             
             //移除不安全的标签
             body.find('script,link').remove();
@@ -439,8 +479,86 @@
             var iframeDOM = iframeWin.document
             ,body = $(iframeDOM.body)
             ,toolEvent = {
+                //水平线
+                hr: function (range) {
+                        insertInline.call(iframeWin, 'hr', {}, range);
+                    }
+                //表格
+                ,table: function (range) {
+                        table.call(this, {}, function (opts) {
+                            var tbody = "<tr>";
+                            for (var i = 0; i < opts.cells; i++) {
+                                tbody += "<td></td>";
+                            }
+                            tbody += "</tr>";
+                            var tmptr = tbody;
+                            for (var i = 0; i < opts.rows; i++) {
+                                tbody += tmptr;
+                            }
+                            insertInline.call(iframeWin, 'table', {
+                                text: tbody
+                            }, range);
+                        });
+                    }
+                //段落格式
+                ,fontFomat: function (range) {
+                        var alt = set.fontFomat || {
+                            code: ["p", "h1", "h2", "h3", "h4", "h5", "h6", "div"],
+                            text: ["正文(p)", "一级标题(h1)", "二级标题(h2)", "三级标题(h3)", "四级标题(h4)", "五级标题(h5)", "六级标题(h6)", "块级元素(div)"]
+                        }, arr = {}, arr2 = {};
+                        var codes = alt.code;
+                        var texts = alt.text;
+                        var fonts = function () {
+                            $.each(codes, function (index, item) {
+                                arr[index] = item;
+                            });
+                            return arr;
+                        }();
+                        var fonttexts = function () {
+                            $.each(texts, function (index, item) {
+                                arr2[index] = item;
+                            });
+                            return arr2;
+                        }();
+                        fontFomat.call(this, { fonts: fonts, texts: fonttexts }, function (value) {
+                            iframeDOM.execCommand('formatBlock', false, "<" + value + ">");
+                            setTimeout(function () {
+                                body.focus();
+                            }, 10);
+                        });
+                    }
+                //字体大小
+                ,fontSize: function (range) {
+                        var alt = set.fontSize || {
+                            code: ["font-size:10px", "font-size:12px", "font-size:14px", "font-size:16px", "font-size:18px", "font-size:20px", "font-size:24px", "font-size:26px", "font-size:28px", "font-size:30px", "font-size:32px"],
+                            text: ["10px", "12px", "14px", "16px", "18px", "20px", "24px", "26px", "28px", "30px", "32px"]
+                        }, arr = {}, arr2 = {};
+                        var codes = alt.code;
+                        var texts = alt.text;
+                        var fonts = function () {
+                            $.each(codes, function (index, item) {
+                                arr[index] = 'color:#000;'+item;
+                            });
+                            return arr;
+                        }();
+                        var fonttexts = function () {
+                            $.each(texts, function (index, item) {
+                                arr2[index] = item;
+                            });
+                            return arr2;
+                        }();
+                        fontSize.call(this, { fonts: fonts, texts: fonttexts }, function (value) {
+                            insertInline.call(iframeWin, 'span', {
+                                style: value
+                                , text: "&nbsp;"
+                            }, range);
+                            setTimeout(function () {
+                                body.focus();
+                            }, 10);
+                        });
+                    }
                 //超链接
-                link: function(range){
+                ,link: function(range){
                     var container = getContainer(range)
                     ,parentNode = $(container).parent();
 
@@ -652,7 +770,186 @@
             body.on('click', function(){
                 toolCheck.call(iframeWin, tools);
                 soxui.pop.close(face.index);
+                soxui.pop.close(fontFomat.index);
+                soxui.pop.close(fontSize.index);
+                soxui.pop.close(table.index);
             });
+        }
+
+        //插入表格面板
+        ,table = function (options, callback) {
+            table.hide = table.hide || function (e) {
+                if ($(e.target).attr('editor-event') !== 'table') {
+                    soxui.pop.close(table.index);
+                }
+            };
+            if (!/mobile/i.test(navigator.userAgent)) {
+                return table.index = soxui.pop.tips(
+                    function () {
+                        return '<div style="padding: 5px;border: 1px solid #e6e6e6;background: #fff;color: #000;"><span id="laytable_label" class="soxui-label">0列 x 0行</span>'
+                            + '<table class="soxui-table" lay-size="sm">'
+                            + '<tbody>'
+                            + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+
+                            + '</tbody>'
+                            + '</table></div>';
+                    }(), this, {
+                        tips: 1
+                        , time: 0
+                        , skin: 'soxui-box soxui-util-face'
+                        , maxWidth: 500
+                        , success: function (layero, index) {
+                            layero.css({
+                                marginTop: -4
+                                ,marginLeft: -10
+                            });
+                            layero.find('td').on('mouseover', function () {
+                                layero.find('#laytable_label')[0].innerText = (this.cellIndex + 1) + "列X" + (this.parentElement.rowIndex + 1) + "行";
+                                layero.find('td').removeAttr("style");
+
+                                $(this).attr('style', 'background-color:linen;');
+                                $(this).prevAll().attr('style', 'background-color:linen;');
+                                for (var i = 0; i < $(this.parentElement).prevAll().length; i++) {
+                                    for (var j = 0; j < $(this.parentElement).prevAll()[i].childNodes.length; j++) {
+                                        if (j <= this.cellIndex) {
+                                            $(this.parentElement).prevAll()[i].children[j].style = "background-color:linen;";
+                                        }
+                                    }
+                                }
+                            });
+                            layero.find('td').on('click', function () {
+                                callback && callback({
+                                    cells: this.cellIndex + 1
+                                    , rows: this.parentElement.rowIndex
+                                });
+                                soxui.pop.close(index);
+                            });
+                            $(document).off('click', table.hide).on('click', table.hide);
+                        }
+                    });
+            } else {
+                return table.index = soxui.pop.open({
+                    type: 1
+                    , title: false
+                    , closeBtn: 0
+                    , shade: 0.05
+                    , shadeClose: true
+                    , content: function () {
+                        return '<div style="padding: 5px;border: 1px solid #e6e6e6;background: #fff;color: #000;"><span id="laytable_label" class="soxui-label">0列 x 0行</span>'
+                            + '<table class="soxui-table" lay-size="sm">'
+                            + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
+                            + '</table></div>';
+                    }()
+                    , area: ['85%']
+                    , skin: 'soxui-box soxui-util-face'
+                    , success: function (layero, index) {
+                        layero.css({
+                            marginTop: -4
+                            ,marginLeft: -10
+                        });
+                        layero.find('td').on('touchmove', function (e) {
+                            var realTarget = getTouchElement(e);
+                            if (realTarget != null && realTarget.tagName.toUpperCase() === 'TD') {
+                                layero.find('#laytable_label')[0].innerText = (realTarget.cellIndex + 1) + "列X" + (realTarget.parentElement.rowIndex + 1) + "行";
+                                layero.find('td').removeAttr("style");
+
+                                $(realTarget).attr('style', 'background-color:linen;');
+                                $(realTarget).prevAll().attr('style', 'background-color:linen;');
+                                for (var i = 0; i < $(realTarget.parentElement).prevAll().length; i++) {
+                                    for (var j = 0; j < $(realTarget.parentElement).prevAll()[i].childNodes.length; j++) {
+                                        if (j <= realTarget.cellIndex) {
+                                            $(realTarget.parentElement).prevAll()[i].children[j].style = "background-color:linen;";
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                        layero.find('td').on('touchend', function (e) {
+                            var realTarget = getTouchElement(e);
+                            if (realTarget != null && realTarget.tagName.toUpperCase() === 'TD') {
+                                callback && callback({
+                                    cells: realTarget.cellIndex + 1
+                                    , rows: realTarget.parentElement.rowIndex
+                                });
+                                soxui.pop.close(index);
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+        //段落格式
+        ,fontFomat = function (options, callback) {
+            // fontFomat.hide = fontFomat.hide || function (e) {
+            //     if ($(e.target).attr('editor-event') == 'fontFomat' || $(e.target).attr('editor-event') == 'fontfamily') {
+            //     } else {
+            //         // soxui.pop.close(fontFomat.index);
+            //     }
+            // }
+            fontFomat.index = soxui.pop.tips(function () {
+                var content = [];
+                $.each(options.fonts, function (index, item) {
+                    content.push('<li title="' + options.fonts[index] + '" style="float: initial;width:100%;height: auto;"><' + options.fonts[index] + '>' + options.texts[index] + '</' + options.fonts[index] + '></li>');
+                });
+                return '<ul class="soxui-clear" style="color:#000;">' + content.join('') + '</ul>';
+            }(), this, {
+                    tips: 1
+                    , time: 0
+                    , skin: 'soxui-box soxui-util-face'
+                    , success: function (layero, index) {
+                        layero.css({ marginTop: -4, marginLeft: -10 }).find('.soxui-clear>li').on('click', function () {
+                            callback && callback(this.title, options.fonts);
+                            soxui.pop.close(index);
+                        });
+                        $(document).off('click', fontFomat.hide).on('click', fontFomat.hide);
+                    }
+                });
+        }
+
+        //字体大小
+        ,fontSize = function (options, callback) {
+            // fontSize.hide = fontSize.hide || function (e) {
+            //     if ($(e.target).attr('editor-event') != 'fontSize') {
+            //         // soxui.pop.close(fontSize.index);
+            //     }
+            // }
+            fontSize.index = soxui.pop.tips(function () {
+                var content = [];
+                $.each(options.fonts, function (index, item) {
+                    content.push('<li title="' + options.fonts[index] + '" style="float: initial;width:100%;' + options.fonts[index] + '"><' + options.fonts[index] + '>' + options.texts[index] + '</' + options.fonts[index] + '></li>');
+                });
+                return '<ul class="soxui-clear" style="width: max-content;width:-moz-max-content;">' + content.join('') + '</ul>';
+            }(), this, {
+                    tips: 1
+                    , time: 0
+                    , skin: 'soxui-box soxui-util-face'
+                    , success: function (layero, index) {
+                        layero.css({ marginTop: -4, marginLeft: -10 }).find('.soxui-clear>li').on('click', function () {
+                            callback && callback(this.title, options.fonts);
+                            soxui.pop.close(index);
+                        });
+                        $(document).off('click', fontSize.hide).on('click', fontSize.hide);
+                    }
+                });
         }
         
         //超链接面板
@@ -661,7 +958,7 @@
 
             var conf = {
                 type: 1
-                ,id: 'LAY_editor_link'
+                ,id: 'soxui_editor_link'
                 ,area: '350px'
                 ,shade: 0.05
                 ,shadeClose: true
@@ -765,7 +1062,7 @@
 
             var conf = {
                 type: 1
-                ,id: 'LAY_editor_code'
+                ,id: 'soxui_editor_code'
                 ,area: '550px'
                 ,shade: 0.05
                 ,shadeClose: true
@@ -812,28 +1109,64 @@
         }
         
         //全部工具
-        ,tools = {
-            html: '<i class="soxui-icon editor-tool-html" title="HTML源代码" lay-command="html" editor-event="html"">&#xe64b;</i>'
-            ,strong: '<i class="soxui-icon editor-tool-b" title="加粗" lay-command="Bold" editor-event="b"">&#xe62b;</i>'
-            ,italic: '<i class="soxui-icon editor-tool-i" title="斜体" lay-command="italic" editor-event="i"">&#xe644;</i>'
-            ,underline: '<i class="soxui-icon editor-tool-u" title="下划线" lay-command="underline" editor-event="u"">&#xe646;</i>'
-            ,del: '<i class="soxui-icon editor-tool-d" title="删除线" lay-command="strikeThrough" editor-event="d"">&#xe64f;</i>'
-            ,h1: '<i class="soxui-icon editor-tool-h1" title="大标题" lay-command="heading" editor-event="h1""><b>H1</b></i>'
-            ,h2: '<i class="soxui-icon editor-tool-h2" title="小标题" lay-command="heading" editor-event="h2""><b>H2</b></i>'
-            
-            ,'|': '<span class="editor-tool-mid"></span>'
-            
-            ,left: '<i class="soxui-icon editor-tool-left" title="左对齐" lay-command="justifyLeft" editor-event="left"">&#xe649;</i>'
-            ,center: '<i class="soxui-icon editor-tool-center" title="居中对齐" lay-command="justifyCenter" editor-event="center"">&#xe647;</i>'
-            ,right: '<i class="soxui-icon editor-tool-right" title="右对齐" lay-command="justifyRight" editor-event="right"">&#xe648;</i>'
-            ,link: '<i class="soxui-icon editor-tool-link" title="插入链接" editor-event="link"">&#xe64c;</i>'
-            ,unlink: '<i class="soxui-icon editor-tool-unlink soxui-disabled" title="清除链接" lay-command="unlink" editor-event="unlink"">&#xe64d;</i>'
-            ,face: '<i class="soxui-icon editor-tool-face" title="表情" editor-event="face"">&#xe650;</i>'
-            ,image: '<i class="soxui-icon editor-tool-image" title="图片" editor-event="image">&#xe64a;<input type="file" name="file"></i>'
-            ,code: '<i class="soxui-icon editor-tool-code" title="插入代码" editor-event="code">&#xe64e;</i>'
-            
-            ,help: '<i class="soxui-icon editor-tool-help" title="帮助" editor-event="help">&#xe607;</i>'
+        ,toolShow = function(item,index){
+            var tools = {
+                html: '<i class="soxui-icon editor-tool-html" title="HTML源代码" lay-command="html" editor-event="html">&#xe64b;</i>'
+                ,strong: '<i class="soxui-icon editor-tool-b" title="加粗" lay-command="Bold" editor-event="b">&#xe62b;</i>'
+                ,italic: '<i class="soxui-icon editor-tool-i" title="斜体" lay-command="italic" editor-event="i">&#xe644;</i>'
+                ,underline: '<i class="soxui-icon editor-tool-u" title="下划线" lay-command="underline" editor-event="u">&#xe646;</i>'
+                ,del: '<i class="soxui-icon editor-tool-d" title="删除线" lay-command="strikeThrough" editor-event="d">&#xe64f;</i>'
+                ,hr: '<i class="soxui-icon editor-tool-hr" title="水平线" editor-event="hr"><b>Hr</b></i>'
+                ,fontFomat: '<i class="soxui-icon" title="段落格式" editor-event="fontFomat" style="font-size:18px;font-weight:bold;">P</i>'
+                ,fontSize: '<i class="soxui-icon" title="字体大小" editor-event="fontSize" style="font-size:18px;font-weight:bold;">A</i>'
+                
+                ,'|': '<span class="editor-tool-mid"></span>'
+                
+                ,left: '<i class="soxui-icon editor-tool-left" title="左对齐" lay-command="justifyLeft" editor-event="left">&#xe649;</i>'
+                ,center: '<i class="soxui-icon editor-tool-center" title="居中对齐" lay-command="justifyCenter" editor-event="center">&#xe647;</i>'
+                ,right: '<i class="soxui-icon editor-tool-right" title="右对齐" lay-command="justifyRight" editor-event="right">&#xe648;</i>'
+                ,link: '<i class="soxui-icon editor-tool-link" title="插入链接" editor-event="link">&#xe64c;</i>'
+                ,unlink: '<i class="soxui-icon editor-tool-unlink soxui-disabled" title="清除链接" lay-command="unlink" editor-event="unlink">&#xe64d;</i>'
+                ,face: '<i class="soxui-icon editor-tool-face" title="表情" editor-event="face"">&#xe650;</i>'
+                ,image: '<i class="soxui-icon editor-tool-image" title="图片" editor-event="image">&#xe64a;<input type="file" name="file"></i>'
+                ,code: '<i class="soxui-icon editor-tool-code" title="插入代码" editor-event="code">&#xe64e;</i>'
+
+                ,colorpicker: '<i class="soxui-icon" title="字体颜色选择" id="soxui-editor-font-color-'+(index || 0)+'"></i>'
+                ,fontBackColor: '<i class="soxui-icon" title="字体背景色选择" id="soxui-editor-font-background-'+(index || 0)+'"></i>'
+
+                ,table: '<i class="soxui-icon" title="插入表格" editor-event="table" style="font-size:24px">&#xe62d;</i>'
+                
+                ,help: '<i class="soxui-icon editor-tool-help" title="帮助" editor-event="help">&#xe607;</i>'
+            }
+
+            return tools[item] ? tools[item] : false;
         }
+
+        // ,tools = {
+        //     html: '<i class="soxui-icon editor-tool-html" title="HTML源代码" lay-command="html" editor-event="html"">&#xe64b;</i>'
+        //     ,strong: '<i class="soxui-icon editor-tool-b" title="加粗" lay-command="Bold" editor-event="b"">&#xe62b;</i>'
+        //     ,italic: '<i class="soxui-icon editor-tool-i" title="斜体" lay-command="italic" editor-event="i"">&#xe644;</i>'
+        //     ,underline: '<i class="soxui-icon editor-tool-u" title="下划线" lay-command="underline" editor-event="u"">&#xe646;</i>'
+        //     ,del: '<i class="soxui-icon editor-tool-d" title="删除线" lay-command="strikeThrough" editor-event="d"">&#xe64f;</i>'
+        //     ,h1: '<i class="soxui-icon editor-tool-h1" title="大标题" lay-command="heading" editor-event="h1""><b>H1</b></i>'
+        //     ,h2: '<i class="soxui-icon editor-tool-h2" title="小标题" lay-command="heading" editor-event="h2""><b>H2</b></i>'
+            
+        //     ,'|': '<span class="editor-tool-mid"></span>'
+            
+        //     ,left: '<i class="soxui-icon editor-tool-left" title="左对齐" lay-command="justifyLeft" editor-event="left"">&#xe649;</i>'
+        //     ,center: '<i class="soxui-icon editor-tool-center" title="居中对齐" lay-command="justifyCenter" editor-event="center"">&#xe647;</i>'
+        //     ,right: '<i class="soxui-icon editor-tool-right" title="右对齐" lay-command="justifyRight" editor-event="right"">&#xe648;</i>'
+        //     ,link: '<i class="soxui-icon editor-tool-link" title="插入链接" editor-event="link"">&#xe64c;</i>'
+        //     ,unlink: '<i class="soxui-icon editor-tool-unlink soxui-disabled" title="清除链接" lay-command="unlink" editor-event="unlink"">&#xe64d;</i>'
+        //     ,face: '<i class="soxui-icon editor-tool-face" title="表情" editor-event="face"">&#xe650;</i>'
+        //     ,image: '<i class="soxui-icon editor-tool-image" title="图片" editor-event="image">&#xe64a;<input type="file" name="file"></i>'
+        //     ,code: '<i class="soxui-icon editor-tool-code" title="插入代码" editor-event="code">&#xe64e;</i>'
+
+        //     ,colorpicker: '<i class="soxui-icon" title="字体颜色选择" id="soxui-editor-font-color-'+this.index+'"></i>'
+        //     ,fontBackColor: '<i class="soxui-icon" title="字体背景色选择" id="soxui-editor-font-background-'+this.index+'"></i>'
+            
+        //     ,help: '<i class="soxui-icon editor-tool-help" title="帮助" editor-event="help">&#xe607;</i>'
+        // }
     }
 
     if(typeof(soxui) != 'undefined')

@@ -100,7 +100,7 @@
             {
                 config[i] = options[i];
             }
-        }
+        };
 
         return this;
     }
