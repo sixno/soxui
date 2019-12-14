@@ -178,20 +178,22 @@
                 , predefine: true
                 , colors: ['#cc0000', '#999999', '#ff8c00', '#ffb800', '#ff7800', '#1e90ff', '#009688', '#5fb878', '#ffffff', '#000000']
                 , size: 'ed'
-                , done: function (color) {console.log('e-index',that.index);
+                , done: function (color) {
                     var iframeWin = getWin(that.index);
                     if (device.ie)
+                    {
                         iframeWin[0].document.execCommand('backColor', false, color);
+                    }
                     else
+                    {
                         iframeWin[0].document.execCommand('hiliteColor', false, color);
+                    }
 
                     setTimeout(function () {
                         iframeWin[0].document.body.focus();
                     }, 10);
                 }
             });
-
-            
 
             return that.index;
         };
@@ -279,7 +281,7 @@
         //获得iframe窗口对象
         ,getWin = function(index){
             var iframe = $('#soxui_editor_'+ index)
-            ,iframeWin = iframe.prop('contentWindow');console.log('getWin',index);
+            ,iframeWin = iframe.prop('contentWindow');
             return [iframeWin, iframe];
         }
         
@@ -537,7 +539,7 @@
                         var texts = alt.text;
                         var fonts = function () {
                             $.each(codes, function (index, item) {
-                                arr[index] = 'color:#000;'+item;
+                                arr[index] = item;
                             });
                             return arr;
                         }();
@@ -908,9 +910,9 @@
             fontFomat.index = soxui.pop.tips(function () {
                 var content = [];
                 $.each(options.fonts, function (index, item) {
-                    content.push('<li title="' + options.fonts[index] + '" style="float: initial;width:100%;height: auto;"><' + options.fonts[index] + '>' + options.texts[index] + '</' + options.fonts[index] + '></li>');
+                    content.push('<li title="' + options.fonts[index] + '" style="float: initial;width:100%;height:auto;line-height:100%;"><' + options.fonts[index] + ' style="padding:5px 0;margin:0;">' + options.texts[index] + '</' + options.fonts[index] + '></li>');
                 });
-                return '<ul class="soxui-clear" style="color:#000;">' + content.join('') + '</ul>';
+                return '<ul class="soxui-clear" style="color:#000;width:256px;">' + content.join('') + '</ul>';
             }(), this, {
                     tips: 1
                     , time: 0
@@ -920,7 +922,7 @@
                             callback && callback(this.title, options.fonts);
                             soxui.pop.close(index);
                         });
-                        $(document).off('click', fontFomat.hide).on('click', fontFomat.hide);
+                        // $(document).off('click', fontFomat.hide).on('click', fontFomat.hide);
                     }
                 });
         }
@@ -935,9 +937,9 @@
             fontSize.index = soxui.pop.tips(function () {
                 var content = [];
                 $.each(options.fonts, function (index, item) {
-                    content.push('<li title="' + options.fonts[index] + '" style="float: initial;width:100%;' + options.fonts[index] + '"><' + options.fonts[index] + '>' + options.texts[index] + '</' + options.fonts[index] + '></li>');
+                    content.push('<li title="' + options.fonts[index] + '" style="float: initial;width:100%;color:#000;height:auto;line-height:100%;padding:5px 0;' + options.fonts[index] + '">' + options.texts[index] + '</li>');
                 });
-                return '<ul class="soxui-clear" style="width: max-content;width:-moz-max-content;">' + content.join('') + '</ul>';
+                return '<ul class="soxui-clear" style="width: 128px;">' + content.join('') + '</ul>';
             }(), this, {
                     tips: 1
                     , time: 0
@@ -947,7 +949,7 @@
                             callback && callback(this.title, options.fonts);
                             soxui.pop.close(index);
                         });
-                        $(document).off('click', fontSize.hide).on('click', fontSize.hide);
+                        // $(document).off('click', fontSize.hide).on('click', fontSize.hide);
                     }
                 });
         }
