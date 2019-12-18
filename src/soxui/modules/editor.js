@@ -260,7 +260,7 @@
                     ,'h1,h2,h3,h4,h5,h6{margin-bottom: 10px;}'
                     ,'a{color:#01AAED; text-decoration:none;}a:hover{color:#c00}'
                     ,'p{margin-bottom: 10px;}'
-                    ,'td{border: 1px solid #DDD;width:80px;padding:5px;}'
+                    ,'td{border: 1px solid #DDD;min-width:80px;padding:5px;}'
                     ,'table{border-collapse: collapse;}'
                     ,'img{display: inline-block; border: none; vertical-align: middle;}'
                     ,'pre{margin: 10px 0; padding: 10px; line-height: 20px; border: 1px solid #ddd; border-left-width: 6px; background-color: #F2F2F2; color: #333; font-family: Courier New; font-size: 12px;}'
@@ -805,7 +805,7 @@
                             + '</tbody>'
                             + '</table></div>';
                     }(), this, {
-                        tips: 1
+                        tips: [3, '#fff']
                         , time: 0
                         , skin: 'soxui-box soxui-util-face'
                         , maxWidth: 500
@@ -914,7 +914,7 @@
                 });
                 return '<ul class="soxui-clear" style="color:#000;width:256px;">' + content.join('') + '</ul>';
             }(), this, {
-                    tips: 1
+                    tips: [3, '#fff']
                     , time: 0
                     , skin: 'soxui-box soxui-util-face'
                     , success: function (layero, index) {
@@ -941,7 +941,7 @@
                 });
                 return '<ul class="soxui-clear" style="width: 128px;">' + content.join('') + '</ul>';
             }(), this, {
-                    tips: 1
+                    tips: [3, '#fff']
                     , time: 0
                     , skin: 'soxui-box soxui-util-face'
                     , success: function (layero, index) {
@@ -959,7 +959,7 @@
             var body = this;
 
             var conf = {
-                type: 1
+                type: [3, '#fff']
                 ,id: 'soxui_editor_link'
                 ,area: '350px'
                 ,shade: 0.05
@@ -1013,7 +1013,7 @@
             var alts = ["[微笑]", "[嘻嘻]", "[哈哈]", "[可爱]", "[可怜]", "[挖鼻]", "[吃惊]", "[害羞]", "[挤眼]", "[闭嘴]", "[鄙视]", "[爱你]", "[泪]", "[偷笑]", "[亲亲]", "[生病]", "[太开心]", "[白眼]", "[右哼哼]", "[左哼哼]", "[嘘]", "[衰]", "[委屈]", "[吐]", "[哈欠]", "[抱抱]", "[怒]", "[疑问]", "[馋嘴]", "[拜拜]", "[思考]", "[汗]", "[困]", "[睡]", "[钱]", "[失望]", "[酷]", "[色]", "[哼]", "[鼓掌]", "[晕]", "[悲伤]", "[抓狂]", "[黑线]", "[阴险]", "[怒骂]", "[互粉]", "[心]", "[伤心]", "[猪头]", "[熊猫]", "[兔子]", "[ok]", "[耶]", "[good]", "[NO]", "[赞]", "[来]", "[弱]", "[草泥马]", "[神马]", "[囧]", "[浮云]", "[给力]", "[围观]", "[威武]", "[奥特曼]", "[礼物]", "[钟]", "[话筒]", "[蜡烛]", "[蛋糕]"];
             var cont = '';
             var conf = {
-                tips: 1
+                tips: [3, '#fff']
                 ,time: 0
                 ,skin: 'soxui-box soxui-util-face'
                 ,nomc: true
@@ -1031,16 +1031,16 @@
                         });
                         soxui.pop.close(index);
                     });
-                    $(document).off('click', face.hide).on('click', face.hide);
+                    // $(document).off('click', face.hide).on('click', face.hide);
                 }
             };
 
-            face.hide = face.hide || function(e){
-                if(face.index > 0 && $(e.target).attr('editor-event') !== 'face'){
-                    soxui.pop.close(face.index);
-                    face.index = 0;
-                }
-            }
+            // face.hide = face.hide || function(e){
+            //     if(face.index > 0 && $(e.target).attr('editor-event') !== 'face'){
+            //         soxui.pop.close(face.index);
+            //         face.index = 0;
+            //     }
+            // }
 
             if(template['editor_tool_face'])
             {
@@ -1051,7 +1051,7 @@
             else
             {
                 get_template('editor_tool_face',function(){
-                    conf.content = soxui.tpl.render(template['editor_tool_face'],{path:path,alts:alts});
+                    cont = soxui.tpl.render(template['editor_tool_face'],{path:path,alts:alts});
 
                     face.index = soxui.pop.tips(cont,body,conf);
                 });
