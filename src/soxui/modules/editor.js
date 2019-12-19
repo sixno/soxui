@@ -262,6 +262,7 @@
                     ,'p{margin-bottom: 10px;}'
                     ,'td{border: 1px solid #DDD;min-width:80px;padding:5px;}'
                     ,'table{border-collapse: collapse;}'
+                    ,'td table{width:100%;height:100%;}'
                     ,'img{display: inline-block; border: none; vertical-align: middle;}'
                     ,'pre{margin: 10px 0; padding: 10px; line-height: 20px; border: 1px solid #ddd; border-left-width: 6px; background-color: #F2F2F2; color: #333; font-family: Courier New; font-size: 12px;}'
                 ,'</style>'].join(''))
@@ -305,20 +306,28 @@
                     var range = Range(iframeDOM);
                     var container = getContainer(range)
                     ,parentNode = container.parentNode;
-                    
-                    if(parentNode.tagName.toLowerCase() === 'pre'){
-                        if(e.shiftKey) return;
-                        soxui.pop.msg('请暂时用shift+enter');
-                        return false;
-                    }
 
                     switch(parentNode.tagName.toLowerCase())
                     {
-                        case 'h1':
-                            ed_elem.find('.soxui-editor-tool .editor-tool-h1').removeClass('editor-tool-active');
+                        case 'pre':
+                            if(e.shiftKey) return;
+                            soxui.pop.msg('请暂时用shift+enter');
+                            return false;
                             break;
+
+                        case 'h1':
+                            // ed_elem.find('.soxui-editor-tool .editor-tool-h1').removeClass('editor-tool-active');
+                            // break;
                         case 'h2':
-                            ed_elem.find('.soxui-editor-tool .editor-tool-h2').removeClass('editor-tool-active');
+                            // ed_elem.find('.soxui-editor-tool .editor-tool-h2').removeClass('editor-tool-active');
+                            // break;
+                        case 'h3':
+                        case 'h4':
+                        case 'h5':
+                        case 'h6':
+                        case 'td':
+                        case 'div':
+                            // iframeDOM.execCommand('formatBlock', false);
                             break;
 
                         default:
@@ -415,7 +424,7 @@
         ,toolCheck = function(tools, othis){
             var iframeDOM = this.document
             ,CHECK = 'editor-tool-active'
-            ,container = getContainer(Range(iframeDOM))
+            ,container = $(getContainer(Range(iframeDOM)))
             ,item = function(type){
                 return tools.find('.editor-tool-'+type)
             }
@@ -427,7 +436,7 @@
             tools.find('>i').removeClass(CHECK);
             item('unlink').addClass(ABLED);
 
-            $(container).parents().each(function(){
+            container.parents().each(function(){
                 var tagName = this.tagName.toLowerCase()
                 ,textAlign = this.style.textAlign;
 
@@ -452,12 +461,20 @@
                         item('d').addClass(CHECK);
                         break;
 
-                    case 'h1':
-                    case 'h2':
-                        item(tagName).addClass(CHECK);
+                    // case 'h1':
+                    // case 'h2':
+                    //     item(tagName).addClass(CHECK);
 
                     //对齐
+                    case 'body':
                     case 'p':
+                    case 'h1':
+                    case 'h2':
+                    case 'h3':
+                    case 'h4':
+                    case 'h5':
+                    case 'h6':
+                    case 'div':
                         if(textAlign === 'center'){
                             item('center').addClass(CHECK);
                         } else if(textAlign === 'right'){
@@ -474,6 +491,24 @@
                         break;
                 }
             });
+
+            if(item('left').length > 0)
+            {
+                item('left').removeClass(CHECK);
+
+                if(container.attr('style') == 'text-align: center;' || container.attr('align') == 'center')
+                {
+                    item('center').addClass(CHECK);
+                }
+                else if(container.attr('style') == 'text-align: right;' || container.attr('align') == 'right')
+                {
+                    item('right').addClass(CHECK);
+                }
+                else
+                {
+                    if(!item('center').hasClass(CHECK) && !item('right').hasClass(CHECK)) item('left').addClass(CHECK);
+                }
+            }
         }
 
         //触发工具
@@ -487,7 +522,7 @@
                     }
                 //表格
                 ,table: function (range) {
-                        table.call(this, {}, function (opts) {
+                        table.call(this, {}, function (opts) {console.log(opts)
                             var tbody = "<tr>";
                             for (var i = 0; i < opts.cells; i++) {
                                 tbody += "<td></td>";
@@ -497,9 +532,9 @@
                             for (var i = 0; i < opts.rows; i++) {
                                 tbody += tmptr;
                             }
-                            insertInline.call(iframeWin, 'table', {
-                                text: tbody
-                            }, range);
+                            var table = {text: tbody};
+                            if(opts.align == 'center') table.style = 'margin: auto;';
+                            insertInline.call(iframeWin, 'table', table, range);
                         });
                     }
                 //段落格式
@@ -703,7 +738,7 @@
             ,click = function(){
                 var othis = $(this)
                 ,events = othis.attr('editor-event')
-                ,command = othis.attr('lay-command');
+                ,command = othis.attr('editor-command');
                 
                 if(othis.hasClass(ABLED)) return;
 
@@ -732,17 +767,13 @@
                     }
                     
                     if(/justifyLeft|justifyCenter|justifyRight/.test(command)){
-                        var tagName = container.parentNode.tagName.toLowerCase();
-                        switch(tagName)
+                        if(container.parentNode)
                         {
-                            case 'h1':
-                            case 'h2':
-                                iframeDOM.execCommand('formatBlock', false, '<'+tagName+'>');
-                                break;
-
-                            default:
-                                iframeDOM.execCommand('formatBlock', false, '<p>');
-                                break;
+                            iframeDOM.execCommand('formatBlock', false, '<'+container.parentNode.tagName.toLowerCase()+'>');
+                        }
+                        else
+                        {
+                            iframeDOM.execCommand('formatBlock', false, '<p>');
                         }
                     }
                     setTimeout(function(){
@@ -779,7 +810,7 @@
         }
 
         //插入表格面板
-        ,table = function (options, callback) {
+        ,table = function (options, callback) {//console.log(tools);
             table.hide = table.hide || function (e) {
                 if ($(e.target).attr('editor-event') !== 'table') {
                     soxui.pop.close(table.index);
@@ -789,6 +820,7 @@
                 return table.index = soxui.pop.tips(
                     function () {
                         return '<div style="padding: 5px;border: 1px solid #e6e6e6;background: #fff;color: #000;"><span id="laytable_label" class="soxui-label">0列 x 0行</span>'
+                            + '<span style="float:right;"><input type="checkbox" style="position: relative;top: 2px;">居中</span>'
                             + '<table class="soxui-table" lay-size="sm">'
                             + '<tbody>'
                             + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
@@ -810,12 +842,14 @@
                         , skin: 'soxui-box soxui-util-face'
                         , maxWidth: 500
                         , success: function (layero, index) {
+                            var tb_align = '';
+
                             layero.css({
                                 marginTop: -4
                                 ,marginLeft: -10
                             });
                             layero.find('td').on('mouseover', function () {
-                                layero.find('#laytable_label')[0].innerText = (this.cellIndex + 1) + "列X" + (this.parentElement.rowIndex + 1) + "行";
+                                layero.find('#laytable_label')[0].innerText = (this.cellIndex + 1) + "列 x " + (this.parentElement.rowIndex + 1) + "行";
                                 layero.find('td').removeAttr("style");
 
                                 $(this).attr('style', 'background-color:linen;');
@@ -828,14 +862,18 @@
                                     }
                                 }
                             });
+                            layero.find('input').on('click', function () {
+                                tb_align = tb_align == 'center' ? '' : 'center';
+                            });
                             layero.find('td').on('click', function () {
                                 callback && callback({
                                     cells: this.cellIndex + 1
                                     , rows: this.parentElement.rowIndex
+                                    , align: tb_align
                                 });
                                 soxui.pop.close(index);
                             });
-                            $(document).off('click', table.hide).on('click', table.hide);
+                            // $(document).off('click', table.hide).on('click', table.hide);
                         }
                     });
             } else {
@@ -847,6 +885,7 @@
                     , shadeClose: true
                     , content: function () {
                         return '<div style="padding: 5px;border: 1px solid #e6e6e6;background: #fff;color: #000;"><span id="laytable_label" class="soxui-label">0列 x 0行</span>'
+                            + '<span style="float:right;"><input type="checkbox" style="position: relative;top: 2px;">居中</span>'
                             + '<table class="soxui-table" lay-size="sm">'
                             + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
                             + '<tr style="height: 20px;"><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>'
@@ -863,6 +902,8 @@
                     , area: ['85%']
                     , skin: 'soxui-box soxui-util-face'
                     , success: function (layero, index) {
+                        var tb_align = '';
+
                         layero.css({
                             marginTop: -4
                             ,marginLeft: -10
@@ -870,7 +911,7 @@
                         layero.find('td').on('touchmove', function (e) {
                             var realTarget = getTouchElement(e);
                             if (realTarget != null && realTarget.tagName.toUpperCase() === 'TD') {
-                                layero.find('#laytable_label')[0].innerText = (realTarget.cellIndex + 1) + "列X" + (realTarget.parentElement.rowIndex + 1) + "行";
+                                layero.find('#laytable_label')[0].innerText = (realTarget.cellIndex + 1) + "列 x " + (realTarget.parentElement.rowIndex + 1) + "行";
                                 layero.find('td').removeAttr("style");
 
                                 $(realTarget).attr('style', 'background-color:linen;');
@@ -884,12 +925,16 @@
                                 }
                             }
                         });
+                        layero.find('input').on('touchend', function () {
+                            tb_align = tb_align == 'center' ? '' : 'center';
+                        });
                         layero.find('td').on('touchend', function (e) {
                             var realTarget = getTouchElement(e);
                             if (realTarget != null && realTarget.tagName.toUpperCase() === 'TD') {
                                 callback && callback({
                                     cells: realTarget.cellIndex + 1
                                     , rows: realTarget.parentElement.rowIndex
+                                    , align: tb_align
                                 });
                                 soxui.pop.close(index);
                             }
@@ -1113,22 +1158,22 @@
         //全部工具
         ,toolShow = function(item,index){
             var tools = {
-                html: '<i class="soxui-icon editor-tool-html" title="HTML源代码" lay-command="html" editor-event="html">&#xe64b;</i>'
-                ,strong: '<i class="soxui-icon editor-tool-b" title="加粗" lay-command="Bold" editor-event="b">&#xe62b;</i>'
-                ,italic: '<i class="soxui-icon editor-tool-i" title="斜体" lay-command="italic" editor-event="i">&#xe644;</i>'
-                ,underline: '<i class="soxui-icon editor-tool-u" title="下划线" lay-command="underline" editor-event="u">&#xe646;</i>'
-                ,del: '<i class="soxui-icon editor-tool-d" title="删除线" lay-command="strikeThrough" editor-event="d">&#xe64f;</i>'
+                html: '<i class="soxui-icon editor-tool-html" title="HTML源代码" editor-command="html" editor-event="html">&#xe64b;</i>'
+                ,strong: '<i class="soxui-icon editor-tool-b" title="加粗" editor-command="Bold" editor-event="b">&#xe62b;</i>'
+                ,italic: '<i class="soxui-icon editor-tool-i" title="斜体" editor-command="italic" editor-event="i">&#xe644;</i>'
+                ,underline: '<i class="soxui-icon editor-tool-u" title="下划线" editor-command="underline" editor-event="u">&#xe646;</i>'
+                ,del: '<i class="soxui-icon editor-tool-d" title="删除线" editor-command="strikeThrough" editor-event="d">&#xe64f;</i>'
                 ,hr: '<i class="soxui-icon editor-tool-hr" title="水平线" editor-event="hr"><b>Hr</b></i>'
                 ,fontFomat: '<i class="soxui-icon" title="段落格式" editor-event="fontFomat" style="font-size:18px;font-weight:bold;">P</i>'
                 ,fontSize: '<i class="soxui-icon" title="字体大小" editor-event="fontSize" style="font-size:18px;font-weight:bold;">A</i>'
                 
                 ,'|': '<span class="editor-tool-mid"></span>'
                 
-                ,left: '<i class="soxui-icon editor-tool-left" title="左对齐" lay-command="justifyLeft" editor-event="left">&#xe649;</i>'
-                ,center: '<i class="soxui-icon editor-tool-center" title="居中对齐" lay-command="justifyCenter" editor-event="center">&#xe647;</i>'
-                ,right: '<i class="soxui-icon editor-tool-right" title="右对齐" lay-command="justifyRight" editor-event="right">&#xe648;</i>'
+                ,left: '<i class="soxui-icon editor-tool-left editor-tool-active" title="左对齐" editor-command="justifyLeft" editor-event="left">&#xe649;</i>'
+                ,center: '<i class="soxui-icon editor-tool-center" title="居中对齐" editor-command="justifyCenter" editor-event="center">&#xe647;</i>'
+                ,right: '<i class="soxui-icon editor-tool-right" title="右对齐" editor-command="justifyRight" editor-event="right">&#xe648;</i>'
                 ,link: '<i class="soxui-icon editor-tool-link" title="插入链接" editor-event="link">&#xe64c;</i>'
-                ,unlink: '<i class="soxui-icon editor-tool-unlink soxui-disabled" title="清除链接" lay-command="unlink" editor-event="unlink">&#xe64d;</i>'
+                ,unlink: '<i class="soxui-icon editor-tool-unlink soxui-disabled" title="清除链接" editor-command="unlink" editor-event="unlink">&#xe64d;</i>'
                 ,face: '<i class="soxui-icon editor-tool-face" title="表情" editor-event="face"">&#xe650;</i>'
                 ,image: '<i class="soxui-icon editor-tool-image" title="图片" editor-event="image">&#xe64a;<input type="file" name="file"></i>'
                 ,code: '<i class="soxui-icon editor-tool-code" title="插入代码" editor-event="code">&#xe64e;</i>'
@@ -1145,21 +1190,21 @@
         }
 
         // ,tools = {
-        //     html: '<i class="soxui-icon editor-tool-html" title="HTML源代码" lay-command="html" editor-event="html"">&#xe64b;</i>'
-        //     ,strong: '<i class="soxui-icon editor-tool-b" title="加粗" lay-command="Bold" editor-event="b"">&#xe62b;</i>'
-        //     ,italic: '<i class="soxui-icon editor-tool-i" title="斜体" lay-command="italic" editor-event="i"">&#xe644;</i>'
-        //     ,underline: '<i class="soxui-icon editor-tool-u" title="下划线" lay-command="underline" editor-event="u"">&#xe646;</i>'
-        //     ,del: '<i class="soxui-icon editor-tool-d" title="删除线" lay-command="strikeThrough" editor-event="d"">&#xe64f;</i>'
-        //     ,h1: '<i class="soxui-icon editor-tool-h1" title="大标题" lay-command="heading" editor-event="h1""><b>H1</b></i>'
-        //     ,h2: '<i class="soxui-icon editor-tool-h2" title="小标题" lay-command="heading" editor-event="h2""><b>H2</b></i>'
+        //     html: '<i class="soxui-icon editor-tool-html" title="HTML源代码" editor-command="html" editor-event="html"">&#xe64b;</i>'
+        //     ,strong: '<i class="soxui-icon editor-tool-b" title="加粗" editor-command="Bold" editor-event="b"">&#xe62b;</i>'
+        //     ,italic: '<i class="soxui-icon editor-tool-i" title="斜体" editor-command="italic" editor-event="i"">&#xe644;</i>'
+        //     ,underline: '<i class="soxui-icon editor-tool-u" title="下划线" editor-command="underline" editor-event="u"">&#xe646;</i>'
+        //     ,del: '<i class="soxui-icon editor-tool-d" title="删除线" editor-command="strikeThrough" editor-event="d"">&#xe64f;</i>'
+        //     ,h1: '<i class="soxui-icon editor-tool-h1" title="大标题" editor-command="heading" editor-event="h1""><b>H1</b></i>'
+        //     ,h2: '<i class="soxui-icon editor-tool-h2" title="小标题" editor-command="heading" editor-event="h2""><b>H2</b></i>'
             
         //     ,'|': '<span class="editor-tool-mid"></span>'
             
-        //     ,left: '<i class="soxui-icon editor-tool-left" title="左对齐" lay-command="justifyLeft" editor-event="left"">&#xe649;</i>'
-        //     ,center: '<i class="soxui-icon editor-tool-center" title="居中对齐" lay-command="justifyCenter" editor-event="center"">&#xe647;</i>'
-        //     ,right: '<i class="soxui-icon editor-tool-right" title="右对齐" lay-command="justifyRight" editor-event="right"">&#xe648;</i>'
+        //     ,left: '<i class="soxui-icon editor-tool-left" title="左对齐" editor-command="justifyLeft" editor-event="left"">&#xe649;</i>'
+        //     ,center: '<i class="soxui-icon editor-tool-center" title="居中对齐" editor-command="justifyCenter" editor-event="center"">&#xe647;</i>'
+        //     ,right: '<i class="soxui-icon editor-tool-right" title="右对齐" editor-command="justifyRight" editor-event="right"">&#xe648;</i>'
         //     ,link: '<i class="soxui-icon editor-tool-link" title="插入链接" editor-event="link"">&#xe64c;</i>'
-        //     ,unlink: '<i class="soxui-icon editor-tool-unlink soxui-disabled" title="清除链接" lay-command="unlink" editor-event="unlink"">&#xe64d;</i>'
+        //     ,unlink: '<i class="soxui-icon editor-tool-unlink soxui-disabled" title="清除链接" editor-command="unlink" editor-event="unlink"">&#xe64d;</i>'
         //     ,face: '<i class="soxui-icon editor-tool-face" title="表情" editor-event="face"">&#xe650;</i>'
         //     ,image: '<i class="soxui-icon editor-tool-image" title="图片" editor-event="image">&#xe64a;<input type="file" name="file"></i>'
         //     ,code: '<i class="soxui-icon editor-tool-code" title="插入代码" editor-event="code">&#xe64e;</i>'
