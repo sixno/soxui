@@ -522,7 +522,7 @@
                     }
                 //表格
                 ,table: function (range) {
-                        table.call(this, {}, function (opts) {console.log(opts)
+                        table.call(this, {}, function (opts) {
                             var tbody = "<tr>";
                             for (var i = 0; i < opts.cells; i++) {
                                 tbody += "<td></td>";
