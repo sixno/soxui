@@ -329,7 +329,7 @@
                 if(config.fixed){
                     win.on('resize', function(){
                         that.offset();
-                        (/^\d+%$/.test(config.area[0]) || /^\d+%$/.test(config.area[1])) && that.auto(times);
+                        (/^\d+%$/.test(config.area[0]) || /^\d+%$/.test(config.area[1]));// && that.auto(times);
                         config.type == 4 && that.tips();
                     });
                 }
@@ -351,22 +351,58 @@
                 if(config.isOutAnim){
                     that.layero.data('isOutAnim', true);
                 }
-            }).auto(times);
+            });//.auto(times);
         };
 
         //自适应
-        Class.pt.auto = function(index){
-            var that = this, config = that.config, layero = $('#'+ doms[0] + index);
+        // Class.pt.auto = function(index){
+        //     var that = this, config = that.config, layero = $('#'+ doms[0] + index);
+
+
+        //     var area = [layero.innerWidth(), layero.innerHeight()]
+        //     ,titHeight = layero.find(doms[1]).outerHeight() || 0
+        //     ,btnHeight = layero.find(doms[2]).outerHeight() || 0
+        //     ,setHeight = function(elem){
+        //         elem = layero.find(elem);
+        //         elem.height(area[1] - titHeight - btnHeight - 2*(parseFloat(elem.css('padding-top'))|0));
+        //     };
+
+        //     switch(config.type){
+        //         case 2: 
+        //             setHeight('iframe');
+        //         break;
+        //         default:
+        //             if(config.area[1] === ''){
+        //                 if(config.maxHeight > 0 && layero.outerHeight() > config.maxHeight){
+        //                     area[1] = config.maxHeight;
+        //                     setHeight('.'+doms[5]);
+        //                 } else if(config.fixed && area[1] >= win.height()){
+        //                     area[1] = win.height();
+        //                     setHeight('.'+doms[5]);
+        //                 }
+        //             } else {
+        //                 setHeight('.'+doms[5]);
+        //             }
+        //         break;
+        //     };
+
+        //     return that;
+        // };
+
+        //计算坐标
+        Class.pt.offset = function(){
+            var that = this, config = that.config, layero = that.layero;
 
             if(config.area[0] === '' && config.maxWidth > 0){
                 //为了修复IE7下一个让人难以理解的bug
                 if(layer.ie && layer.ie < 8 && config.btn){
                     layero.width(layero.innerWidth());
                 }
+
                 layero.outerWidth() > config.maxWidth && layero.width(config.maxWidth);
             }
-            
-            var area = [layero.innerWidth(), layero.innerHeight()]
+
+            var area = [layero.outerWidth(), layero.outerHeight()]
             ,titHeight = layero.find(doms[1]).outerHeight() || 0
             ,btnHeight = layero.find(doms[2]).outerHeight() || 0
             ,setHeight = function(elem){
@@ -392,14 +428,7 @@
                     }
                 break;
             };
-            
-            return that;
-        };
 
-        //计算坐标
-        Class.pt.offset = function(){
-            var that = this, config = that.config, layero = that.layero;
-            var area = [layero.outerWidth(), layero.outerHeight()];
             var type = typeof config.offset === 'object';
             that.offsetTop = (win.height() - area[1])/2;
             that.offsetLeft = (win.width() - area[0])/2;
