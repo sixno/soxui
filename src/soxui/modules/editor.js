@@ -675,16 +675,16 @@
                             $.ajax({
                                 url: upload.url,
                                 type: 'POST',
-                                crossDomain: true,
-                                xhrFields:{withCredentials: true},
+                                // crossDomain: true,
+                                // xhrFields:{withCredentials: true},
                                 data: data,
                                 cache: false,
                                 contentType: false,
                                 processData: false,
-                                success: function(obj){
+                                success: function(obj,status,xhr){
                                     soxui.pop.close(loading);
 
-                                    var img = upload.data(obj);
+                                    var img = upload.data(obj,status,xhr);
 
                                     if(img)
                                     {
