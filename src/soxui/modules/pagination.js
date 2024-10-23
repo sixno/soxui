@@ -173,7 +173,7 @@
                     $.each(config.limits, function(index, item){
                         options.push(
                             '<option value="'+ item +'"'
-                            +(item === config.limit ? 'selected' : '') 
+                            +(item == config.limit ? 'selected' : '') 
                             +'>'+ item +' 条/页</option>'
                         );
                     });

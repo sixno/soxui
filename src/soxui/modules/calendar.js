@@ -280,7 +280,11 @@
         //设置值
         LAY.prototype.val = function(value){
             return this.each(function(index, item){
+                    var old_v = item.value;
+
                     item.value = value;
+
+                    if (value != old_v) item.dispatchEvent(new Event('change', { bubbles: true }));
             });
         };
         
