@@ -1,6 +1,6 @@
 @ echo off
 
-set php_path=C:\Wnmp\php\php.exe
+set php_path=C:\www\softbase\php\php.exe
 
 %php_path% build.php
 

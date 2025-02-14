@@ -14,7 +14,7 @@
 
         var uibase = '';
         var config = {
-            redeclare: true,
+            redeclare: false,
         };
 
         uibase = document.currentScript ? document.currentScript.src : function() {
@@ -27,7 +27,7 @@
 
         this.base = uibase;
 
-        this.use = function(modules, callback, extension) {
+        this.use = function(modules, callback, extension, ext_map) {
             var that = this;
             var head = document.getElementsByTagName('head')[0];
             var func = 'var $ = soxui.$;\r\n';;
@@ -86,7 +86,7 @@
 
                         callback = callback.substring(callback.indexOf('{') + 1, callback.lastIndexOf('}'));
 
-                        var exe = new Function(func+callback);
+                        var exe = new Function(func + callback);
 
                         exe();
                     } else {
@@ -108,10 +108,18 @@
             }
 
             if (typeof(extension) == 'object') {
-                for (var i in extension) {
-                    this[i] = extension[i];
+                if (typeof ext_map == undefined) {
+                    for (var i in extension) {
+                        this[i] = extension[i];
 
-                    func += 'var ' + i + ' = soxui.' + i + ';\r\n';
+                        func += 'var ' + i + ' = soxui.' + i + ';\r\n';
+                    }
+                } else {
+                    for (var i in ext_map) {
+                        this[i] = extension[ext_map[i]];
+
+                        func += 'var ' + i + ' = soxui.' + i + ';\r\n';
+                    }
                 }
             }
 

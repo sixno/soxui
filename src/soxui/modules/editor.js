@@ -986,7 +986,7 @@
                 $.each(options.fonts, function (index, item) {
                     content.push('<li title="' + options.fonts[index] + '" style="float: initial;width:100%;height:auto;line-height:100%;"><' + options.fonts[index] + ' style="padding:5px 0;margin:0;">' + options.texts[index] + '</' + options.fonts[index] + '></li>');
                 });
-                return '<ul class="soxui-clear" style="color:#000;width:256px;">' + content.join('') + '</ul>';
+                return '<ul class="soxui-clear" style="color:#000;width:256px;margin:0;">' + content.join('') + '</ul>';
             }(), this, {
                     tips: [3, '#fff']
                     , time: 0
@@ -1011,9 +1011,9 @@
             fontSize.index = soxui.pop.tips(function () {
                 var content = [];
                 $.each(options.fonts, function (index, item) {
-                    content.push('<li title="' + options.fonts[index] + '" style="float: initial;width:100%;color:#000;height:auto;line-height:100%;padding:5px 0;' + options.fonts[index] + '">' + options.texts[index] + '</li>');
+                    content.push('<li title="' + options.fonts[index] + '" style="float:initial;width:100%;color:#000;height:auto;line-height:100%;padding:5px 0;' + options.fonts[index] + '">' + options.texts[index] + '</li>');
                 });
-                return '<ul class="soxui-clear" style="width: 128px;">' + content.join('') + '</ul>';
+                return '<ul class="soxui-clear" style="width:128px;margin:0;">' + content.join('') + '</ul>';
             }(), this, {
                     tips: [3, '#fff']
                     , time: 0
