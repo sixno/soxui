@@ -108,7 +108,7 @@
             }
 
             if (typeof(extension) == 'object') {
-                if (typeof ext_map == undefined) {
+                if (typeof ext_map == 'undefined') {
                     for (var i in extension) {
                         this[i] = extension[i];
 
