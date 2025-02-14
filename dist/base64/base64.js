@@ -1,7 +1,15 @@
 (function(){
 	function Base64() {
 		// private property
-		_keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+		_b64ch = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+		var _b64chs = Array.prototype.slice.call(_b64ch);
+		var _b64tab = (function (a) {
+			var tab = {};
+			a.forEach(function (c, i) { return tab[c] = i; });
+			return tab;
+		})(_b64chs);
+		var _b64reg = /^(?:[A-Za-z\d+\/]{4})*?(?:[A-Za-z\d+\/]{2}(?:==)?|[A-Za-z\d+\/]{3}=?)?$/;
+		var _fromCC = String.fromCharCode.bind(String);
 
 		// public method for encoding
 		this.encode = function (input) {
@@ -23,11 +31,28 @@
 					enc4 = 64;
 				}
 				output = output +
-				_keyStr.charAt(enc1) + _keyStr.charAt(enc2) +
-				_keyStr.charAt(enc3) + _keyStr.charAt(enc4);
+				_b64ch.charAt(enc1) + _b64ch.charAt(enc2) +
+				_b64ch.charAt(enc3) + _b64ch.charAt(enc4);
 			}
 			return output;
 		}
+
+		this.btoa = function (bin) {
+			var u32, c0, c1, c2, asc = '';
+			var pad = bin.length % 3;
+			for (var i = 0; i < bin.length;) {
+				if ((c0 = bin.charCodeAt(i++)) > 255 ||
+					(c1 = bin.charCodeAt(i++)) > 255 ||
+					(c2 = bin.charCodeAt(i++)) > 255)
+					throw new TypeError('invalid character found');
+				u32 = (c0 << 16) | (c1 << 8) | c2;
+				asc += _b64chs[u32 >> 18 & 63]
+					+ _b64chs[u32 >> 12 & 63]
+					+ _b64chs[u32 >> 6 & 63]
+					+ _b64chs[u32 & 63];
+			}
+			return pad ? asc.slice(0, pad - 3) + "===".substring(pad) : asc;
+		};
 
 		// public method for decoding
 		this.decode = function (input) {
@@ -37,10 +62,10 @@
 			var i = 0;
 			input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
 			while (i < input.length) {
-				enc1 = _keyStr.indexOf(input.charAt(i++));
-				enc2 = _keyStr.indexOf(input.charAt(i++));
-				enc3 = _keyStr.indexOf(input.charAt(i++));
-				enc4 = _keyStr.indexOf(input.charAt(i++));
+				enc1 = _b64ch.indexOf(input.charAt(i++));
+				enc2 = _b64ch.indexOf(input.charAt(i++));
+				enc3 = _b64ch.indexOf(input.charAt(i++));
+				enc4 = _b64ch.indexOf(input.charAt(i++));
 				chr1 = (enc1 << 2) | (enc2 >> 4);
 				chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
 				chr3 = ((enc3 & 3) << 6) | enc4;
@@ -55,6 +80,25 @@
 			output = _utf8_decode(output);
 			return output;
 		}
+
+		this.atob = function (asc) {
+			// console.log('polyfilled');
+			asc = asc.replace(/\s+/g, '');
+			if (!_b64reg.test(asc))
+				throw new TypeError('malformed base64.');
+			asc += '=='.slice(2 - (asc.length & 3));
+			var u24, bin = '', r1, r2;
+			for (var i = 0; i < asc.length;) {
+				u24 = _b64tab[asc.charAt(i++)] << 18
+					| _b64tab[asc.charAt(i++)] << 12
+					| (r1 = _b64tab[asc.charAt(i++)]) << 6
+					| (r2 = _b64tab[asc.charAt(i++)]);
+				bin += r1 === 64 ? _fromCC(u24 >> 16 & 255)
+					: r2 === 64 ? _fromCC(u24 >> 16 & 255, u24 >> 8 & 255)
+						: _fromCC(u24 >> 16 & 255, u24 >> 8 & 255, u24 & 255);
+			}
+			return bin;
+		};
 
 		// private method for UTF-8 encoding
 		_utf8_encode = function (string) {
