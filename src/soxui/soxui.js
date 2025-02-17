@@ -116,6 +116,8 @@
                     }
                 } else {
                     for (var i in ext_map) {
+                        if ((i + '') === '' || typeof extension[ext_map[i]] == 'undefined') continue;
+
                         this[i] = extension[ext_map[i]];
 
                         func += 'var ' + i + ' = soxui.' + i + ';\r\n';

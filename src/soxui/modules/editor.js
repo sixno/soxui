@@ -659,7 +659,7 @@
                                 success: function(obj,status,xhr) {
                                     soxui.pop.close(loading);
 
-                                    var img = upload.data(obj,status,xhr);
+                                    var img = upload.data(obj, status, xhr);
 
                                     if (img) {
                                         insertInline.call(iframeWin, 'img', img, range);
@@ -672,7 +672,7 @@
 
                                     soxui.pop.msg('图片上传失败');
                                 },
-                                dataType: 'json'
+                                dataType: upload.type || 'json'
                             });
                         } else {
                             soxui.pop.msg('未选中图片');
@@ -722,7 +722,7 @@
                                 cache: false,
                                 contentType: false,
                                 processData: false,
-                                success: function(obj,status,xhr) {
+                                success: function(obj, status, xhr) {
                                     soxui.pop.close(loading);
 
                                     var attach = upload.data(obj, status, xhr);
@@ -738,7 +738,7 @@
 
                                     soxui.pop.msg('文件上传失败');
                                 },
-                                dataType: 'json'
+                                dataType: upload.type || 'json'
                             });
                         } else {
                             soxui.pop.msg('未选中文件');
